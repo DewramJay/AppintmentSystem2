@@ -42,9 +42,7 @@ import StudentViewCivilStaff from './Pages/StudentViewCivilStaff.jsx';
 import StudentViewMechStaff from './Pages/StudentViewMechStaff';
 import Testing from './Pages/Student/Testing';
 import LAccountPage from './Pages/Student/LAccountPage';
-
-
-
+import Tpage2 from './Pages/ImageUpload/Tpage2';
 
 export default function Test() {
   return (
@@ -150,6 +148,10 @@ export default function Test() {
 
             <Route path="/LAccountPage" element={<LAccountPage/>} >
             </Route>
+
+            <Route path="/Tpage2" element={<Tpage2/>} >
+            </Route>
+     
          
           </Routes>
   
