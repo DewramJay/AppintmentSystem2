@@ -111,17 +111,7 @@ export default function HomeStudent () {
      
     </Box>
 
-    <Box p={2}>
     
-    <Stack spacing={40} direction="row" sx={{ height:'100', width: '450' }} alignItems={"left"}>
-    <Chip label="Scheduled Appointments" sx={{ fontSize: "1.2rem" ,backgroundColor: "#C5ECF1"}} />
-    {isStudent && (
-                <a href ="/Tpage2" ><Button variant='contained' sx={{ width: 100 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>profile photo
-                </Button>  </a>
-      )}          
-                </Stack>
-     
-    </Box>
     
     
     {appointments
