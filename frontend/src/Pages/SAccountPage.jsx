@@ -1,9 +1,31 @@
-import { AppBar, Box, Button, CardContent, CardMedia, Chip, CssBaseline, Divider, Grid, List, ListItem, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, CardContent, Chip, CssBaseline, Divider, Grid, List, ListItem, Stack, Toolbar, Typography } from "@mui/material";
 import MainTopbar from "../Components/MainTopbar";
 import { useState, useEffect } from "react";
+import { useRef } from "react";
+import { signup, login, logout, useAuth } from "./ImageUpload/firebase";
+import Profile from "./ImageUpload/Profile";
+
+
+
 
 export default function SAccountPage () {
+
+
+  const buttonStyle = {
+   
+  
+    fontsize: '50px',
+    margin:' 0px 20px 0px 0px',
+   
+  };
+
+
+  
     const [user, setUser] = useState(null);
+    const [ loading, setLoading ] = useState(false);
+    const currentUser = useAuth();
+    const emailRef = useRef();
+    const passwordRef = useRef();
 
     useEffect(() => {
       const storedUser = localStorage.getItem('User');
@@ -22,6 +44,43 @@ export default function SAccountPage () {
   
       const isStudent = user && user.role === 'Lecturer';
 
+
+///////////////////////
+async function handleSignup() {
+  setLoading(true);
+  try {
+    await signup(emailRef.current.value, passwordRef.current.value);
+  } catch {
+    alert("Error!");
+  }
+  setLoading(false);
+}
+
+async function handleLogin() {
+  setLoading(true);
+  try {
+    await login(emailRef.current.value, passwordRef.current.value);
+  } catch {
+    alert("Error!");
+  }
+  setLoading(false);
+}
+
+async function handleLogout() {
+  setLoading(true);
+  try {
+    await logout();
+  } catch {
+    alert("Error!");
+  }
+  setLoading(false);
+}
+
+
+////////////////////////
+
+
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline/>
@@ -36,13 +95,41 @@ export default function SAccountPage () {
           <Grid container spacing={0}>
             <Grid item xs={4} md={3} sx={{borderRight: 1, borderColor: 'divider'}}>
               <Box p={2} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Box sx={{ width: '50%', height: 'auto' }}>
+                <Box sx={{ width: '100%', height: 'auto' }}>
                     <Toolbar/>
-                  <CardMedia
-                    sx={{ height: 300 }}
-                    image="https://images.unsplash.com/photo-1620523162656-4f968dca355a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8YmVhdXRpZnVsJTIwZ2lybHN8ZW58MHx8MHx8&w=1000&q=80"
-                    title="green iguana"
-                  />
+
+                    <div id="main">
+                      <div>
+      
+                          <div>Currently logged in as: { currentUser?.email } </div>
+
+                          <div >
+                            <p>Edit profile Photo</p>
+                          </div>
+
+                          {!currentUser && 
+                            <>
+                              <div className="fields">
+                                <input ref={emailRef} placeholder="Email" />
+                                <input ref={passwordRef} type="password" placeholder="Password" />
+                              </div>
+
+                              <button disabled={ loading } onClick={handleSignup}>Sign Up</button>
+                              <button disabled={ loading } onClick={handleLogin}>Log In</button>
+                            </>
+                          }
+
+                          {currentUser && 
+                            <>
+                              <Profile />
+                              <button className="buttonstyle" disabled={ loading || !currentUser } onClick={handleLogout}>Remove Profile Photo</button>
+                            </>
+                          }
+                          </div>
+                        </div>
+
+
+                        
                 </Box>
               </Box>
             </Grid>

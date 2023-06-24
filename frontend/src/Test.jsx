@@ -44,8 +44,6 @@ import Testing from './Pages/Student/Testing';
 import LAccountPage from './Pages/Student/LAccountPage';
 
 
-
-
 export default function Test() {
   return (
     
@@ -150,7 +148,7 @@ export default function Test() {
 
             <Route path="/LAccountPage" element={<LAccountPage/>} >
             </Route>
-         
+
           </Routes>
   
       </Router>
