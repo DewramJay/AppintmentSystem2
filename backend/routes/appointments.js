@@ -54,7 +54,7 @@ router.get("/getOne/:id", async (req, res) => {
   }); 
 
   router.get("/getOne1/:id", async (req, res) => {
-    const filter = { subject: req.params.id };
+    const filter = { _id: req.params.id };
     
     const data = await Appointment.findOne(filter);
     
@@ -101,5 +101,53 @@ router.get("/getOne/:id", async (req, res) => {
       res.status(500).json({ success: false, msg: "Internal server error" });
     }
   });
+
+  router.put("/updateAll/:updateId", async (req, res) => {
+    const filter = { _id : req.params.updateId };
+    const options = {
+      upsert: true,
+      new: true,
+    };
+    try {
+      const result = await Appointment.findOneAndUpdate(
+        filter,
+        {
+          
+          maker:req.body.maker ,
+          seeker:req.body.seeker,
+          subject:req.body.subject ,
+          notes:req.body.notes ,
+          date:req.body.date ,
+          time:req.body.time ,
+          category:req.body.ategory,
+          status:parseInt(req.body.status)
+
+        },
+        options
+      );
+      res.status(200).send({ appointment: result });
+    } catch (error) {
+      res.status(400).send({ success: false, msg: error });
+    }
+  });
+
+
+  router.route("/delete/:Id").delete(async(req,res)=>{
+    let _id = req.params.Id;
+  
+    await Appointment.findOneAndDelete({ _id })
+    .then (()=>{
+        res.status(200).send({status: "Item is Deleted"})
+    }).catch((err)=>{
+        console.log(err.message);
+        res.status(500).send({status:"Error with deleting data"});
+    })
+  
+  });
+  
+
+
+
+
 
 module.exports = router; 
