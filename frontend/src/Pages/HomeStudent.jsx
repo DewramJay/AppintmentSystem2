@@ -23,19 +23,21 @@ export default function HomeStudent () {
   
 
   useEffect(() => {
-      function getAppointments() {
-        axios
-          .get("http://localhost:8080/api/appointments/")
-          .then((res) => {
-            setAppointments(res.data);
-          })
-  
-          .catch((err) => {
-            alert(err.message);
-          });
-      }
-      getAppointments();
-    }, []);
+    function getAppointments() {
+      axios
+        .get("http://localhost:8080/api/appointments/")
+        .then((res) => {
+          // Reverse the appointment list
+          const reversedAppointments = res.data.reverse();
+          setAppointments(reversedAppointments);
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
+    }
+    getAppointments();
+  }, []);
+    
 
     const [seeker, setSeeker] = useState([]);
 
@@ -61,6 +63,16 @@ export default function HomeStudent () {
         .catch((error) => {
           console.error(error); // Handle error
         });
+        axios
+        .get("http://localhost:8080/api/appointments/")
+        .then((res) => {
+          // Reverse the appointment list
+          const reversedAppointments = res.data.reverse();
+          setAppointments(reversedAppointments);
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
     };
 
     function handleUpdate3(appointmentId){
@@ -71,6 +83,16 @@ export default function HomeStudent () {
         })
         .catch((error) => {
           console.error(error); // Handle error
+        });
+        axios
+        .get("http://localhost:8080/api/appointments/")
+        .then((res) => {
+          // Reverse the appointment list
+          const reversedAppointments = res.data.reverse();
+          setAppointments(reversedAppointments);
+        })
+        .catch((err) => {
+          alert(err.message);
         });
     };
   
@@ -182,7 +204,7 @@ export default function HomeStudent () {
 
     {appointments
     .filter(item => item.maker === user.regNo && user.role === "Student")
-    .filter(item => item.status === 3 || 2)
+    .filter(item => item.status >= 2)
     .map((item) => (
         <Grid item xs={12} sm={4} md={3} key={item._id}>
          {item.status === 2 && ( 
@@ -202,7 +224,19 @@ export default function HomeStudent () {
             <CardContent >
             
               <Typography textAlign={'left'}>
-              {item.seeker} cancel the appointment.
+              {item.seeker} rejected the appointment.
+              </Typography>
+           
+            </CardContent>
+          </Card>
+           )}
+
+{item.status === 4 && ( 
+          <Card sx={{border: '2px solid blue', width: '100%' }} onLoad={() => getSeekerName(item.maker)}>
+            <CardContent >
+            
+              <Typography textAlign={'left'}>
+              {item.seeker} cancelled the appointment.
               </Typography>
            
             </CardContent>
