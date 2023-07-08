@@ -5,6 +5,7 @@ import SideDrawer from "../Components/SideDrawer";
 import { Grid } from '@mui/material';
 import LectureAccStudentViewTopbar from "../Components/LectureAccStudentViewTopbar";
 import LectureImg from '../Images/LectureImg.jpg'
+import MainTopbar from "../Components/MainTopbar";
 
 
 
@@ -65,7 +66,7 @@ useEffect(() => {
       <Box sx={{ display: 'flex' }}>
         <CssBaseline/>
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-            <LectureAccStudentViewTopbar/>      
+            <MainTopbar/>     
         </AppBar>
         <SideDrawer/>
         <Box
