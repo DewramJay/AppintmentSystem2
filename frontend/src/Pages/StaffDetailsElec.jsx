@@ -56,7 +56,7 @@ export default function HomeStudent () {
                 <div>
                   
                   <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"left"}>
-                  <a href ="/StudentViewElecStaff" ><Button variant='contained' style={buttonStyle} sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Department of Electrical and Environmental Engineering
+                  <a href ="/StudentViewElecStaff" ><Button variant='contained' style={buttonStyle} sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Department of Electrical and Information Engineering
                   </Button>  </a>
                   </Stack>
                   </div>
