@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 //import { ViewState } from '@devexpress/dx-react-scheduler';
 
-import {  AppBar, Box,  Divider,  Grid, Stack, Toolbar, Typography, Popover, InputLabel, Select, MenuItem } from "@mui/material";
+import {  AppBar, Box,  Divider,  Grid, Stack, Toolbar, Typography, Popover, InputLabel, Select, MenuItem, FormControlLabel,Switch, FormLabel, FormGroup } from "@mui/material";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Dialog, ListItem, List, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, FormControl } from '@mui/material';
 
 import MainTopbar from '../../Components/LectureAccStudentViewTopbar';
@@ -11,11 +11,18 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
-import { blue } from '@mui/material/colors';
+import { blue, red } from '@mui/material/colors';
 //import {DataGrid} from '@mui/x-data-grid';
 //import { appointments } from './appointments';
+
+
+
+//new
+
+
 
 
 const GreenTableCell = styled(TableCell)(({ theme }) => ({
@@ -39,8 +46,9 @@ const Testing = () => {
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-
       setmaker(parsedUser.User.regNo);
+      //setUser(parsedUser.User);
+
     }
     
   }, []);
@@ -57,6 +65,8 @@ useEffect(() => {
     
   }, []);
 
+  const [time, settime] = useState(null);
+
   //get appointment to the popover
   const [app, setApp] = useState([]);
   function getApp(){
@@ -65,6 +75,7 @@ useEffect(() => {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setApp(parsedUser.Appointment);
+      //settime(app.time);
     }
   }
     
@@ -73,10 +84,10 @@ useEffect(() => {
 
   //getting appointment data from DB
   const [appointments, setappointments] = useState([]);
-  
   const [subject, setsubject] = useState('');
   const [notes, setNotes] = useState('');
-	const [time, settime] = useState("");
+	
+  console.log(time);
 	//const [date, setdate] = useState("");
 	const [maker, setmaker] = useState("");
   const [seeker, setseeker] = useState("");
@@ -88,6 +99,10 @@ useEffect(() => {
 const [Tempory, setTempory] = useState("");
 //
 
+// const handleTime=(time)=>{
+//   settime(time);
+//   console.log(time);
+// }
 
 //function for add appointment
   function sentData(e){
@@ -136,8 +151,21 @@ const [Tempory, setTempory] = useState("");
     //   setsubject(event.target.value);
     // };
 
-    const handleDoubleClick = (time) => {
+    const handleDoubleClick = (time,status) => {
+      settime(time);
+
+      if(status === 0){
+          setSwitchState(false);
+      }
+      if(status === 5){
+        setSwitchState(true);
+    }
+
+
+      const matchingAppointments = appointments.filter(appointment => (appointment.seeker === seeker || appointment.seeker === maker) && appointment.time === time);
+      if (User.role === "Lecturer" && matchingAppointments.length !== 0) { 
         settime(time);
+      }
       };
 
     const handleClose = () => {
@@ -149,6 +177,41 @@ const [Tempory, setTempory] = useState("");
 		setData({ ...data, [input.name]: input.value });
 	};
 
+
+  
+
+
+const [edit, setEdit] = useState(null);
+
+  const handleEdit = () =>{
+    setEdit(1);
+  }
+
+  const handleEditClose = () => {
+    setEdit(null);
+  };
+
+  //handle vailibility dropdown
+  const [availibility, setAvailibility] = useState(null);
+
+  const handleAvailibility = (time,status) => {
+    settime(time);
+    setAvailibility(1);
+
+    if(status === 0){
+        setSwitchState(false);
+    }
+    if(status === 5){
+      setSwitchState(true);
+  }
+
+ };
+
+  const handleAvailibilityClose = () => {
+    setAvailibility(null);
+  };
+
+
   const [User, setUser] = useState([]);
   //function for display details pf appointments
   const handleDetail = (subject) => {
@@ -156,15 +219,61 @@ const [Tempory, setTempory] = useState("");
     axios
     .get(`http://localhost:8080/api/appointments/getOne1/${subject}`)
     .then((res) => {
-      setUser(res.data);
+      //setUser(res.data);
       localStorage.setItem('Appointment', JSON.stringify(res.data));
       getApp();
     })
     .catch((err) => {
-      alert(err.message);
+      alert(subject);
     });
     
   } 
+
+  function UpdateData(e){
+    e.preventDefault();
+    axios.put(`http://localhost:8080/api/appointments/updateAll/64a91769e22fb808b15b8686`, { 
+      maker:maker ,
+      seeker:seeker,
+      subject:subject,
+      notes:notes,
+      date: date.format("ddd DD MMMM"),
+      time:time,
+      category:category,
+      status:2
+     })
+      .then((response) => {
+        alert('Item updated successfully!');// Handle successful update
+      })
+      .catch((error) => {
+        alert(error.message); // Handle error
+      });
+    };
+
+  //get User details from localsorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem('User');
+
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+
+      setUser(parsedUser.User);
+    }
+    
+  }, []);
+
+  //cancel appointment
+  function handleUpdate4(appointmentId){
+    const status = 4;
+    axios.patch(`http://localhost:8080/api/appointments/update/${appointmentId}`, { status })
+      .then((response) => {
+        console.log(response.data); // Handle successful update
+      })
+      .catch((error) => {
+        console.error(error); // Handle error
+      });
+      
+  };
+
 
   //popover
   const [anchorEl, setAnchorEl] = useState(null);
@@ -179,33 +288,77 @@ const [Tempory, setTempory] = useState("");
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
   
-
+    const isLecturer = User && User.role === 'Lecturer';
+    const isStudent = User && User.role === 'Student';
   
 //handling data of rows in grid 
   const getSlotData = (time, seeker) => {
     console.log(appointments);
-    const matchingAppointments = appointments.filter(appointment => (appointment.seeker === seeker || appointment.seeker === maker) && appointment.time === time);
+    const matchingAppointments = appointments.filter(appointment => (appointment.seeker === seeker || appointment.seeker === maker) && appointment.time === time).filter(appointment =>(appointment.status===2||appointment.status===5));
 
     
     if (matchingAppointments.length === 0) {
-      return "Free";
+      return (
+        <div>
+          {isStudent  && (  
+            <Box onDoubleClick={() => handleDoubleClick(time,0)}>Free</Box>
+          )} 
+
+          {isLecturer  && (  
+            <Box onDoubleClick={() => handleAvailibility(time,0)}>Free</Box>
+          )} 
+        </div>
+        
+      ); 
     } else {
       const subject = matchingAppointments[0].subject;
       const category = matchingAppointments[0].category;
+      const appointmentNo = matchingAppointments[0]._id;
+      const status = matchingAppointments[0].status;
+      const maker = matchingAppointments[0].maker;
 
       //colors for each category
-      const backgroundColor = category === 'one' ? 'yellow' : 
-                       category === 'two' ? 'blue' :
-                       category === 'three' ? 'green' :
+      const backgroundColor = category === 'one' ? '#F2FB96' : //yellow
+                       category === 'two' ? '#96C1FB' : //blue
+                       category === 'three' ? '#96FBA5' : //green
+                       category === 'four' ? '#FB9696' : //red
                        'inherit';
 
+      
       return (
+        
         <div>
-        <Box onMouseEnter={() => handleDetail(subject)}>
-        <Box aria-describedby={id} variant="contained"  onMouseEnter={handleClicK} style={{ backgroundColor }}>
+        {isStudent  && User.regNo === maker &&  (  
+        <Box>
+        <Box aria-describedby={id} variant="contained"  style={{ backgroundColor }}>
           {subject}
         </Box>
         </Box>
+        )}
+
+        {isStudent  && User.regNo !== maker &&  (  
+        <Box>
+        <Box aria-describedby={id} variant="contained"  style={{ backgroundColor:'#FB9696' }}>
+          Not Available
+        </Box>
+        </Box>
+        )}
+       
+        {isLecturer  && (status===2)&&(
+        <Box onMouseEnter={() => handleDetail(appointmentNo)}>
+        <Box aria-describedby={id} variant="contained" onMouseEnter={handleClicK} style={{ backgroundColor }}>
+          {subject}
+        </Box>
+        </Box>
+        )}
+        {isLecturer  && (status===5)&&(
+        <Box onDoubleClick={() => handleAvailibility(time,status)} onMouseEnter={() => handleDetail(appointmentNo)}>
+        <Box aria-describedby={id} variant="contained" style={{ backgroundColor }}>
+          {subject}
+        </Box>
+        </Box>
+        )}
+       
         <Popover
           id={id}
           open={open}
@@ -219,12 +372,88 @@ const [Tempory, setTempory] = useState("");
           <Typography sx={{ p: 2 }}>{app.seeker}</Typography>
           <Typography sx={{ p: 2 }}>{app.maker}</Typography>
           <Typography sx={{ p: 2 }}>{app.subject}</Typography>
+          <Button onClick={handleEdit}>Edit</Button>
+          <Button onClick={()=>{handleUpdate4(app._id)}}>cancel appointment</Button>
         </Popover>
+
+        <Dialog open={edit !== null} onClose={handleEditClose}>
+                        <DialogTitle>{`Appointment for ${app.time} `}</DialogTitle>
+                        <DialogContent>
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            name='date'
+                            id="date"
+                            label="date"
+                            type="text"
+                            disabled={true}
+                            fullWidth
+                            onChange={(e) => {
+                              setApp((prevApp) => ({
+                                ...prevApp,
+                                date: e.target.value,
+                              }));
+                            }}
+                        />
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            name='time'
+                            id="time"
+                            label="time"
+                            type="text"
+                            fullWidth
+                            value={app.time}
+                            onChange={(e)=>{
+                              settime(e.target.value);
+              
+                            }}
+                        />
+
+                        <FormControl fullWidth>
+                          <InputLabel id="demo-simple-select-label">time</InputLabel>
+                          <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            //defaultValue={time}
+                            value={app.time}
+                            label="time"
+                            // disabled={false}
+                            // contentEditable={true}
+                            onChange={(e) => {
+                              setApp((prevApp) => ({
+                                ...prevApp,
+                                time: e.target.value,
+                                
+                              }));
+                              settime(time);
+                            }}
+                          >
+                            <MenuItem value={"12:00 PM"}>12:00 PM</MenuItem>
+                            <MenuItem value={"12:30 PM"}>12:30 PM</MenuItem>
+                            <MenuItem value={"01:00 PM"}>01:00 PM</MenuItem>
+                            <MenuItem value={"01:30 PM"}>01:30 PM</MenuItem>
+                            <MenuItem value={"02:00 PM"}>02:00 PM</MenuItem>
+                            <MenuItem value={"02:30 PM"}>02:30 PM</MenuItem>
+                          </Select>
+                        </FormControl>
+                        
+                        </DialogContent>
+                        <DialogActions>
+                        <Button >Cancel</Button>
+                        <Button onClick={UpdateData} >Save</Button>
+                        {/* disabled={!subject} */}
+                        </DialogActions>
+                    </Dialog>
         </div>
+        
 
         )
     }
   }
+
   
     
 
@@ -235,7 +464,51 @@ const [Tempory, setTempory] = useState("");
         //setSubject('');
         //setNotes('');
       };
-    
+
+      //slide switch
+      const [switchState, setSwitchState] = useState(false);
+
+      const handleSwitchChange = (event) => {
+        setSwitchState(event.target.checked);
+      };
+
+      //not available
+      const blockSchedule = (e)=>{
+
+        e.preventDefault();
+        const newAppointment = {
+                subject:"Not Available",
+                time,
+                date: date.format("ddd DD MMMM"),
+                maker,
+                seeker:User.regNo,
+                notes,
+                category:"four",
+                status:5 
+        }
+        
+        axios.post("http://localhost:8080/api/appointments/add",newAppointment).then(()=>{
+          alert("Done")
+        }).catch((err)=>{
+          alert(err)
+        })
+      }
+
+      //available
+      const removeBlock = (e) =>{
+        e.preventDefault();
+		
+        axios
+        .delete(`http://localhost:8080/api/appointments/delete/${app._id}`)
+        .then(() => {
+      
+          alert('Slot is available');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      }
     
       // filling time column of the data grid
       const rows = [];
@@ -247,7 +520,7 @@ const [Tempory, setTempory] = useState("");
           <TableRow key={i}>
             
             <TableCell >{formattedTime}</TableCell>
-            <TableCell onDoubleClick={() => handleDoubleClick(formattedTime)}>{getSlotData(formattedTime, seeker)}</TableCell>
+            <TableCell >{getSlotData(formattedTime, seeker)}</TableCell>
           </TableRow>
         );
       }
@@ -332,6 +605,8 @@ const [Tempory, setTempory] = useState("");
                         </Table>
                     </TableContainer>
 
+                    {/* Student view of appointment form */}
+                    {User.role === "Student" && (
                     <Dialog open={time !== null} onClose={handleClose}>
                         <DialogTitle>{`Appointment for ${time} `}</DialogTitle>
                         <DialogContent>
@@ -463,6 +738,39 @@ const [Tempory, setTempory] = useState("");
                         {/* disabled={!subject} */}
                         </DialogActions>
                     </Dialog>
+                    )}
+
+                    {/* lecturer view of appointment form */}
+                    {User.role === "Lecturer" && (
+                    <Dialog open={availibility !== null} onClose={handleAvailibilityClose}>
+                        <DialogTitle>{`Schedule for ${time} `}</DialogTitle>
+                        <DialogContent>
+                        
+                        
+
+                        <FormControl component="fieldset">
+                          <FormGroup aria-label="position" row>
+                            <FormControlLabel
+                              value="start"
+                              control={<Switch color="primary" checked={switchState} onChange={handleSwitchChange} />}
+                              
+                              label="not available"
+                              labelPlacement="start"
+                            />
+                          </FormGroup>
+                        </FormControl>
+
+
+                        
+                        </DialogContent>
+                        <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={switchState ? blockSchedule : removeBlock }>Save</Button>
+                        {/* disabled={!subject} */}
+                        </DialogActions>
+                    </Dialog>
+                    )}
+
                     </>
 
               </Box>

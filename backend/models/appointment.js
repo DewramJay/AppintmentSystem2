@@ -20,7 +20,7 @@ const appointmentSchema = new Schema({
     },
     subject: {
         type : String,
-        required : true
+        required : false
     },
     notes: {
         type : String,
