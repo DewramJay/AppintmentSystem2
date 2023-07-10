@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Card, CardActionArea, CardContent, CssBaseline, Divider, List, ListItem, Stack, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Card, CardActionArea, CardContent, CssBaseline, Divider, Grid, List, ListItem, Stack, TextField, Toolbar, Typography } from "@mui/material";
 import { CenterHeaderCard } from "../Components/CenterHeaderCard";
 import { useState } from "react";
 import axios from "axios";
@@ -55,12 +55,12 @@ export default function LoginPage() {
           <CssBaseline />
           <Toolbar />
           <Box sx={{ flexGrow: 1, maxWidth: 2000, height: 850 }}>
-            <Card sx={{ maxWidth: 2000, height: 850 }}>
+            <Card sx={{ maxWidth: 2000, height: 1100 }}>
               <CardActionArea>
                 <CenterHeaderCard title={"Appointment Management System"}>
                   <Stack sx={{ backgroundColor: "#C5ECF1" }} direction='row' height={300} width={500} alignItems='center'>
                     <Stack spacing={2} sx={{ width: '450px' }} alignItems='center'>
-                      <TextField
+                      <TextField 
                         type="email"
                         label="Email"
                         name="email"
@@ -93,46 +93,50 @@ export default function LoginPage() {
                 </CenterHeaderCard>
                 <CardContent>
                   <Divider />
-                  <Stack direction='row' flexGrow={1} alignItems='center' justifyContent='flex-start' spacing={30}>
-                    <Typography sx={{ width: '500px' }}>
-                      The Faculty of Engineering of the University of Ruhuna was established on 1st July 1999 at Hapugala, Galle. Admission to the Faculty of Engineering, University of Ruhuna, is subject to the University Grants Commission policy on university admissions.
-                    </Typography>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
                     <Typography>
-                      <List>
-                        <ListItem variant="h5" gutterBottom>
-                          DEPARTMENTS
-                        </ListItem>
-                        <ListItem>
-                          Civil and Environmental Engineering
-                        </ListItem>
-                        <ListItem>
-                          Electrical and Information Engineering
-                        </ListItem>
-                        <ListItem>
-                          Mechanical and Manufacturing Engineering
-                        </ListItem>
-                        <ListItem>
-                          Interdisciplinary Studies
-                        </ListItem>
-                      </List>
+                      The Faculty of Engineering of University of Ruhuna was established on 1st July 1999 at Hapugala, Galle.
+                      Admission to the Faculty of Engineering, University of Ruhuna, is subject to the University Grants Commission
+                      policy on university admissions.
                     </Typography>
-                    <Typography>
-                      <List>
-                        <ListItem variant="h5" gutterBottom>
-                          CONTACT US
-                        </ListItem>
-                        <ListItem>
-                          Faculty of Engineering, Hapugala, Galle, Sri Lanka.
-                        </ListItem>
-                        <ListItem>
-                          Phone: +(94)0 91 2245765/6
-                        </ListItem>
-                        <ListItem>
-                          E-mail: webmaster@eng.ruh.ac.lk
-                        </ListItem>
-                      </List>
-                    </Typography>
-                  </Stack>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <List>
+                      <ListItem variant="h5" gutterBottom>
+                        DEPARTMENTS
+                      </ListItem>
+                      <ListItem>
+                        Civil and Environmental Engineering
+                      </ListItem>
+                      <ListItem>
+                        Electrical and Information Engineering
+                      </ListItem>
+                      <ListItem>
+                        Mechanical and Manufacturing Engineering
+                      </ListItem>
+                      <ListItem>
+                        Interdisciplinary Studies
+                      </ListItem>
+                    </List>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <List>
+                      <ListItem variant="h5" gutterBottom>
+                        CONTACT US
+                      </ListItem>
+                      <ListItem>
+                        Faculty of Engineering, Hapugala, Galle, Sri Lanka.
+                      </ListItem>
+                      <ListItem>
+                        Phone: +(94)0 91 2245765/6
+                      </ListItem>
+                      <ListItem>
+                        E-mail: webmaster@eng.ruh.ac.lk
+                      </ListItem>
+                    </List>
+                  </Grid>
+                </Grid>
                 </CardContent>
               </CardActionArea>
             </Card>
