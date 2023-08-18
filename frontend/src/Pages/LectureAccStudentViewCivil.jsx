@@ -4,7 +4,8 @@ import { AppBar, Box, Button, Card, CardActions, CardContent, CardMedia, CssBase
 import SideDrawer from "../Components/SideDrawer";
 import { Grid } from '@mui/material';
 import LectureAccStudentViewTopbar from "../Components/LectureAccStudentViewTopbar";
-import LectureImg from '../Images/LectureImg.jpg'
+import LectureImg from '../Images/LectureImg.jpg';
+import { apiUrl } from "../config";
 
 
 
@@ -16,7 +17,7 @@ const [lec, setLec] = useState([]);
 useEffect(() => {
     function getUsers() {
       axios
-        .get("http://localhost:8080/api/users/")
+        .get(apiUrl + "/api/users/")
         .then((res) => {
           setLec(res.data);
         })
@@ -33,7 +34,7 @@ useEffect(() => {
   
   function getLec(data) {
     axios
-    .get(`http://localhost:8080/api/users/getOne/${data}`)
+    .get(apiUrl +`/api/users/getOne/${data}`)
     .then((res) => {
       setUser(res.data);
       localStorage.setItem('Lec', JSON.stringify(res.data));

@@ -5,6 +5,7 @@ import LectureAccStudentViewTopbar from "../Components/LectureAccStudentViewTopb
 import LectureImg from '../Images/LectureImg.jpg'
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../config";
 
 
 export default function HomeStudent () {
@@ -13,7 +14,7 @@ export default function HomeStudent () {
   useEffect(() => {
       function getUsers() {
         axios
-          .get("http://localhost:8080/api/users/")
+          .get(apiUrl +"/api/users/")
           .then((res) => {
             setLec(res.data);
           })
@@ -30,7 +31,7 @@ export default function HomeStudent () {
     
     function getLec(data) {
       axios
-      .get(`http://localhost:8080/api/users/getOne/${data}`)
+      .get(apiUrl +`/api/users/getOne/${data}`)
       .then((res) => {
         setUser(res.data);
         localStorage.setItem('Lec', JSON.stringify(res.data));
