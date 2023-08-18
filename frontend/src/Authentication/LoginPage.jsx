@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from 'react-router-dom';
 import LoginTopbar from "../Components/LoginTopbar";
+import {apiUrl} from "../config";
 
 export default function LoginPage() {
   const [data, setData] = useState({ email: "", password: "" });
@@ -17,7 +18,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "http://localhost:8080/api/auth";
+      const url = apiUrl +"/api/auth";
       const { data: res } = await axios.post(url, data);
       localStorage.setItem("token", res.data);
       getUser();
@@ -33,7 +34,7 @@ export default function LoginPage() {
 
   const getUser = () => {
     axios
-      .get(`http://localhost:8080/api/users/getOne/${data.email}`)
+      .get(apiUrl +`/api/users/getOne/${data.email}`)
       .then((res) => {
         setUser(res.data);
         localStorage.setItem('User', JSON.stringify(res.data));

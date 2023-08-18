@@ -12,11 +12,19 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+
+import { apiUrl } from '../../config';
+
+
+
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import { blue, red } from '@mui/material/colors';
 //import {DataGrid} from '@mui/x-data-grid';
 //import { appointments } from './appointments';
+
+
 
 
 
@@ -87,7 +95,7 @@ useEffect(() => {
   const [subject, setsubject] = useState('');
   const [notes, setNotes] = useState('');
 	
-  console.log(time);
+  //console.log(time);
 	//const [date, setdate] = useState("");
 	const [maker, setmaker] = useState("");
   const [seeker, setseeker] = useState("");
@@ -119,7 +127,7 @@ const [Tempory, setTempory] = useState("");
             status 
 		}
 		
-		axios.post("http://localhost:8080/api/appointments/add",newAppointment).then(()=>{
+		axios.post(apiUrl + "/api/appointments/add",newAppointment).then(()=>{
 			alert("Appointment Added")
 		}).catch((err)=>{
 			alert(err)
@@ -137,7 +145,7 @@ const [Tempory, setTempory] = useState("");
  //Date handlibg section
   async function handleDateChange (newDate) {
     
-    const result =  await axios.get("http://localhost:8080/api/appointments/get?date="+newDate.format("ddd DD MMMM"));
+    const result =  await axios.get(apiUrl + "/api/appointments/get?date="+newDate.format("ddd DD MMMM"));
     setappointments(result.data.Appointment);
     setdate(newDate);
   };
@@ -217,7 +225,7 @@ const [edit, setEdit] = useState(null);
   const handleDetail = (subject) => {
     
     axios
-    .get(`http://localhost:8080/api/appointments/getOne1/${subject}`)
+    .get(apiUrl + `/api/appointments/getOne1/${subject}`)
     .then((res) => {
       //setUser(res.data);
       localStorage.setItem('Appointment', JSON.stringify(res.data));
@@ -229,13 +237,13 @@ const [edit, setEdit] = useState(null);
     
   } 
 
-  function UpdateData(e){
-    e.preventDefault();
-    axios.put(`http://localhost:8080/api/appointments/updateAll/64a91769e22fb808b15b8686`, { 
-      maker:maker ,
-      seeker:seeker,
-      subject:subject,
-      notes:notes,
+  function UpdateData(id){
+    //e.preventDefault();
+    axios.put(apiUrl + `/api/appointments/updateAll/${id}`, { 
+      maker:app.maker ,
+      seeker:app.seeker,
+      subject:app.subject,
+      notes:app.notes,
       date: date.format("ddd DD MMMM"),
       time:time,
       category:category,
@@ -264,7 +272,7 @@ const [edit, setEdit] = useState(null);
   //cancel appointment
   function handleUpdate4(appointmentId){
     const status = 4;
-    axios.patch(`http://localhost:8080/api/appointments/update/${appointmentId}`, { status })
+    axios.patch(apiUrl + `/api/appointments/update/${appointmentId}`, { status })
       .then((response) => {
         console.log(response.data); // Handle successful update
       })
@@ -290,10 +298,30 @@ const [edit, setEdit] = useState(null);
   
     const isLecturer = User && User.role === 'Lecturer';
     const isStudent = User && User.role === 'Student';
+
+    //dayepicker
+    const [selectedDate, setSelectedDate] = React.useState(null);
+
+    const handleDatePickerChange = (date) => {
+      setdate(date);
+    };
+  
+    const renderCustomDay = (date, selectedDate, DayComponent) => {
+      const formattedDate = dayjs(date).format('ddd DD MMMM');
+  
+      return (
+        <DayComponent
+          date={date}
+          selected={selectedDate !== null && dayjs(selectedDate).isSame(date, 'day')}
+        >
+          {formattedDate}
+        </DayComponent>
+      );
+    };
   
 //handling data of rows in grid 
   const getSlotData = (time, seeker) => {
-    console.log(appointments);
+    //console.log(appointments);
     const matchingAppointments = appointments.filter(appointment => (appointment.seeker === seeker || appointment.seeker === maker) && appointment.time === time).filter(appointment =>(appointment.status===2||appointment.status===5));
 
     
@@ -380,24 +408,9 @@ const [edit, setEdit] = useState(null);
                         <DialogTitle>{`Appointment for ${app.time} `}</DialogTitle>
                         <DialogContent>
 
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            name='date'
-                            id="date"
-                            label="date"
-                            type="text"
-                            disabled={true}
-                            fullWidth
-                            onChange={(e) => {
-                              setApp((prevApp) => ({
-                                ...prevApp,
-                                date: e.target.value,
-                              }));
-                            }}
-                        />
+                       
 
-                        <TextField
+                        {/* <TextField
                             autoFocus
                             margin="dense"
                             name='time'
@@ -410,7 +423,7 @@ const [edit, setEdit] = useState(null);
                               settime(e.target.value);
               
                             }}
-                        />
+                        /> */}
 
                         <FormControl fullWidth>
                           <InputLabel id="demo-simple-select-label">time</InputLabel>
@@ -428,22 +441,48 @@ const [edit, setEdit] = useState(null);
                                 time: e.target.value,
                                 
                               }));
-                              settime(time);
+                              settime(e.target.value);
+                              console.log(time);
+                              
                             }}
+                            
                           >
+                            <MenuItem value={"8:30 AM"}>8:30 AM</MenuItem>
+                            <MenuItem value={"9:00 AM"}>9:00 AM</MenuItem>
+                            <MenuItem value={"9:30 AM"}>9:30 AM</MenuItem>
+                            <MenuItem value={"10:00 AM"}>10:00 AM</MenuItem>
+                            <MenuItem value={"10:30 AM"}>10:30 AM</MenuItem>
+                            <MenuItem value={"11:00 AM"}>11:00 AM</MenuItem>
+                            <MenuItem value={"11:30 AM"}>11:30 AM</MenuItem>
                             <MenuItem value={"12:00 PM"}>12:00 PM</MenuItem>
                             <MenuItem value={"12:30 PM"}>12:30 PM</MenuItem>
                             <MenuItem value={"01:00 PM"}>01:00 PM</MenuItem>
                             <MenuItem value={"01:30 PM"}>01:30 PM</MenuItem>
                             <MenuItem value={"02:00 PM"}>02:00 PM</MenuItem>
-                            <MenuItem value={"02:30 PM"}>02:30 PM</MenuItem>
                           </Select>
                         </FormControl>
-                        
+                        <LocalizationProvider dateAdapter={AdapterDayjs} locale="en">
+                          <DatePicker
+                            label="Select a date"
+                            value={date}
+                            onChange={(newValue) => {
+                              const selectedDate = newValue ? newValue.format("MM/DD/YYYY") : null;
+
+                              setApp((prevApp) => ({
+                                ...prevApp,
+                                date: selectedDate,
+                              }));
+
+                              setdate(newValue);
+                            }}
+                            renderInput={(params) => <TextField {...params} />}
+                          />
+                        </LocalizationProvider>
+
                         </DialogContent>
                         <DialogActions>
                         <Button >Cancel</Button>
-                        <Button onClick={UpdateData} >Save</Button>
+                        <Button onClick={()=>{UpdateData(app._id)}}>Save</Button>
                         {/* disabled={!subject} */}
                         </DialogActions>
                     </Dialog>
@@ -487,7 +526,7 @@ const [edit, setEdit] = useState(null);
                 status:5 
         }
         
-        axios.post("http://localhost:8080/api/appointments/add",newAppointment).then(()=>{
+        axios.post(apiUrl + "/api/appointments/add",newAppointment).then(()=>{
           alert("Done")
         }).catch((err)=>{
           alert(err)
@@ -499,7 +538,7 @@ const [edit, setEdit] = useState(null);
         e.preventDefault();
 		
         axios
-        .delete(`http://localhost:8080/api/appointments/delete/${app._id}`)
+        .delete(apiUrl + `/api/appointments/delete/${app._id}`)
         .then(() => {
       
           alert('Slot is available');

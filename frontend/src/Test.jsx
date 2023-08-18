@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
 
+
 import HomeStudent from './Pages/HomeStudent';
 
 
@@ -45,6 +46,11 @@ import LAccountPage from './Pages/Student/LAccountPage';
 
 
 export default function Test() {
+
+  // const basename = '/grp19';
+
+
+  
   return (
     
       <div>

@@ -2,6 +2,7 @@ import { AppBar, Box, Button, Card, CardContent, Chip, CssBaseline, Grid, Toolba
 import MainTopbar from "../Components/MainTopbar";
 import SideDrawer from "../Components/SideDrawer";
 import { useState, useEffect } from "react";
+import { apiUrl } from "../config";
 import axios from "axios";
 
 export default function HomeStudent() {
@@ -22,7 +23,7 @@ export default function HomeStudent() {
   useEffect(() => {
     function getAppointments() {
       axios
-        .get("http://localhost:8080/api/appointments/")
+        .get(apiUrl + "/api/appointments/")
         .then((res) => {
           // Reverse the appointment list
           const reversedAppointments = res.data.reverse();
@@ -39,7 +40,7 @@ export default function HomeStudent() {
 
   function getSeekerName(name) {
     axios
-      .get(`http://localhost:8080/api/users/getName/${name}`)
+      .get(apiUrl +`/api/users/getName/${name}`)
       .then((res) => {
         setSeeker(res.data.User);
       })
@@ -50,7 +51,7 @@ export default function HomeStudent() {
 
   function handleUpdate2(appointmentId) {
     const status = 2;
-    axios.patch(`http://localhost:8080/api/appointments/update/${appointmentId}`, { status })
+    axios.patch(apiUrl +`/api/appointments/update/${appointmentId}`, { status })
       .then((response) => {
         console.log(response.data); // Handle successful update
       })
@@ -58,7 +59,7 @@ export default function HomeStudent() {
         console.error(error); // Handle error
       });
     axios
-      .get("http://localhost:8080/api/appointments/")
+      .get(apiUrl +"/api/appointments/")
       .then((res) => {
         // Reverse the appointment list
         const reversedAppointments = res.data.reverse();
@@ -71,7 +72,7 @@ export default function HomeStudent() {
 
   function handleUpdate3(appointmentId) {
     const status = 3;
-    axios.patch(`http://localhost:8080/api/appointments/update/${appointmentId}`, { status })
+    axios.patch(apiUrl +`/api/appointments/update/${appointmentId}`, { status })
       .then((response) => {
         console.log(response.data); // Handle successful update
       })
@@ -79,7 +80,7 @@ export default function HomeStudent() {
         console.error(error); // Handle error
       });
     axios
-      .get("http://localhost:8080/api/appointments/")
+      .get(apiUrl + "/api/appointments/")
       .then((res) => {
         // Reverse the appointment list
         const reversedAppointments = res.data.reverse();

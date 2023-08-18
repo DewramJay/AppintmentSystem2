@@ -4,6 +4,7 @@ import axios from "axios";
 import {  useNavigate } from "react-router-dom";
 import { AppBar, Box, Button, CardContent, Chip, CssBaseline, Divider, FormControl, Select, MenuItem, Grid, List, ListItem, Stack, TextField, Toolbar, Typography, InputLabel } from "@mui/material";
 import AdminTopbar from "../../Components/AdminTopbar";
+import {apiUrl} from "../../config";
 
 export default function AddStudent() {
 
@@ -29,7 +30,7 @@ export default function AddStudent() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			const url = "http://localhost:8080/api/users";
+			const url = apiUrl +"/api/users";
 			const { data: res } = await axios.post(url, data);
 			navigate("/AddStudent");
       alert("created");
