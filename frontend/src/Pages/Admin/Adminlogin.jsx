@@ -1,6 +1,21 @@
 import { AppBar, Avatar, Box, Button, Card, CardActionArea, CardContent, CssBaseline, Divider, List, ListItem, Stack, TextField, Toolbar, Typography } from "@mui/material";
+import { useState, useEffect } from "react";
+
+
+
 
 export default function LoginPage () {
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = (event) => {
+      event.preventDefault();
+      
+      if (username === 'admin' && password === 'admin') {
+        window.location.replace("/AdminHome");
+      }
+    };
     return (
       <Box sx={{ display: 'flex' }}>
         <CssBaseline/>
@@ -40,12 +55,16 @@ export default function LoginPage () {
                     <Stack sx={{backgroundColor:"#C5ECF1" }} direction = {'row'} height={300} width={500} alignItems={"center"} >
                     <Stack spacing={2} sx={{ width: '450' }} alignItems={"center"}>
                         
-                    <TextField id="outlined-basic" label="Username" variant="outlined" sx={{backgroundColor:"#D9D9D9" ,width:400}} />
-                    <TextField id="outlined-basic" label="Password" variant="outlined" sx={{backgroundColor:"#D9D9D9" ,width:400}} />
+                    <TextField id="outlined-basic" label="Username" 
+                    onChange={(e) => setUsername(e.target.value)}
+                    variant="outlined" sx={{backgroundColor:"#D9D9D9" ,width:400}} />
+                    <TextField id="outlined-basic" label="Password" 
+                    onChange={(e) => setPassword(e.target.value)}
+                    variant="outlined" sx={{backgroundColor:"#D9D9D9" ,width:400}} />
                     
                     
                         <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"center"}>
-                        <a href ="/AdminHome" ><Button variant='contained' sx={{ width: 500 , alignItems:"center", backgroundColor:"#46B7C7"}}>Login</Button></a> 
+                        <Button onClick={handleLogin} variant='contained' sx={{ width: 500 , alignItems:"center", backgroundColor:"#46B7C7"}}>Login</Button>
                             
                         </Stack>
                     </Stack>

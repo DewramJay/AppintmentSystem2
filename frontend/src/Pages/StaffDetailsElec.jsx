@@ -49,14 +49,14 @@ export default function HomeStudent () {
                 <div>
                 
                 <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"left"}>
-                 <a href ="/StudentViewCivilStaff" > <Button variant='contained' style={buttonStyle}  sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Department of Civil and Environmental Engineering
+                 <a href ="/LectureAccStudentViewCivil" > <Button variant='contained' style={buttonStyle}  sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Department of Civil and Environmental Engineering
                  </Button>  </a>
                 </Stack>
                 </div>
                 <div>
                   
                   <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"left"}>
-                  <a href ="/StudentViewElecStaff" ><Button variant='contained' style={buttonStyle} sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Department of Electrical and Information Engineering
+                  <a href ="/LectureAccStudentView" ><Button variant='contained' style={buttonStyle} sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Department of Electrical and Information Engineering
                   </Button>  </a>
                   </Stack>
                   </div>
@@ -64,7 +64,7 @@ export default function HomeStudent () {
                   <div>
                   
                   <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"left"}>
-                  <a href ="/StudentViewMechStaff" > <Button variant='contained' style={buttonStyle} sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Department of Mechanical and Manufacturing Engineering
+                  <a href ="/LectureAccStudentViewMech" > <Button variant='contained' style={buttonStyle} sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Department of Mechanical and Manufacturing Engineering
                    </Button>  </a>
                   </Stack>
                   </div>

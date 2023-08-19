@@ -14,7 +14,15 @@ const appointmentSchema = new Schema({
         type : String,
         required : false
     },
+    makerNo: {
+        type : String,
+        required : false
+    },
     seeker: {
+        type : String,
+        required : false
+    },
+    seekerNo: {
         type : String,
         required : false
     },

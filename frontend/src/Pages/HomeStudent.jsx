@@ -38,15 +38,18 @@ export default function HomeStudent() {
 
   const [seeker, setSeeker] = useState([]);
 
+
   function getSeekerName(name) {
     axios
       .get(apiUrl +`/api/users/getName/${name}`)
       .then((res) => {
-        setSeeker(res.data.User);
+        return(res.data.User.fullName);
+        //console.log(res.data.User);
       })
       .catch((err) => {
         alert(err.message);
       });
+      
   }
 
   function handleUpdate2(appointmentId) {
@@ -91,45 +94,72 @@ export default function HomeStudent() {
       });
   };
 
+  const slotBackgroundColor = (category) => {
+  
+      const backgroundColor = category === 'one' ? '#F2FB96' : //yellow
+                       category === 'two' ? '#96C1FB' : //blue
+                       category === 'three' ? '#96FBA5' : //green
+                       category === 'four' ? '#FB9696' : //red
+                       'inherit';
+
+      return backgroundColor;
+  }
+
   const isStudent = user && user.role === 'Student';
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex", borderRadius: "100px" }}>
       <CssBaseline />
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar
+        position="fixed"
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
         <MainTopbar />
       </AppBar>
       <SideDrawer />
-      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
+      >
         <Toolbar />
         <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+          <Grid container spacing={10} >
+            <Grid item xs={12} md={6} >
               <Box p={2}>
-                <Chip label="Scheduled Appointments" sx={{ fontSize: "1.2rem", backgroundColor: "#C5ECF1" }} />
+                <Chip
+                  label="Scheduled Appointments"
+                  sx={{ fontSize: "1.2rem", backgroundColor: "#C5ECF1" }}
+                />
                 {isStudent && (
-                  <a href="/StaffDetailsElec"><Button variant='contained' sx={{ width: 100, backgroundColor: "#46B7C7" }}>
-                    VIEW
-                  </Button></a>
+                  <a href="/StaffDetailsElec">
+                    <Button borderLeft="10px"
+                      variant="contained"
+                      sx={{ width: 100, backgroundColor: "#46B7C7", left:"100px" }}
+                    >
+                      VIEW
+                    </Button>
+                  </a>
                 )}
               </Box>
               {appointments
-                .filter(item => item.maker === user.regNo && user.role === "Student")
-                .filter(item => item.status === 2)
+                .filter(
+                  (item) => item.makerNo === user.regNo && user.role === "Student"
+                )
+                .filter((item) => item.status === 2)
                 .map((item) => (
-                  <Grid item xs={12} sm={6} md={12} key={item.appointmentNo}>
-                    <Card sx={{ border: '2px solid blue', width: '100%' }}>
-                      <CardContent>
-                        <Typography textAlign={'left'}>
+                  <Grid item xs={12} sm={6} md={12} key={item.appointmentNo} marginTop={2} >
+                    <Card sx={{ /*border: "2px solid blue",*/ width: "80%", borderRadius: "20px" ,bgcolor: "#C5ECF1"}}>
+                      <CardContent >
+                        <Typography textAlign={"left"}>
                           with {item.seeker}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Reason: {item.subject}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Date: {item.date}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Time: {item.time}
                         </Typography>
                       </CardContent>
@@ -137,22 +167,25 @@ export default function HomeStudent() {
                   </Grid>
                 ))}
               {appointments
-                .filter(item => item.seeker === user.regNo && user.role === "Lecturer")
-                .filter(item => item.status === 2)
+                .filter(
+                  (item) =>
+                    item.seekerNo === user.regNo && (user.role === "Instructor" || user.role === "Lecturer")
+                )
+                .filter((item) => item.status === 2)
                 .map((item) => (
-                  <Grid item xs={12} sm={6} md={12} key={item._id}>
-                    <Card sx={{ border: '2px solid blue', width: '100%' }}>
+                  <Grid item xs={12} sm={6} md={12} key={item.appointmentNo} marginTop={2} >
+                    <Card sx={{ /*border: "2px solid blue",*/ width: "80%", borderRadius: "20px" ,bgcolor: slotBackgroundColor(item.category)}}>
                       <CardContent>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           with {item.maker}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Reason: {item.subject}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Date: {item.date}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Time: {item.time}
                         </Typography>
                       </CardContent>
@@ -160,69 +193,80 @@ export default function HomeStudent() {
                   </Grid>
                 ))}
             </Grid>
-            <Grid item xs={12} md={6} sx={{ bgcolor: "#C5ECF1" }}>
+            <Grid item xs={12} md={6} sx={{ bgcolor: "#C5ECF1" }} marginTop={2}>
               <Box p={2}>
-                <Chip label="Notifications" sx={{ fontSize: "1.2rem", backgroundColor: "#FFFFFF" }} />
+                <Chip
+                  label="Notifications"
+                  sx={{ fontSize: "1.2rem", backgroundColor: "#FFFFFF" }}
+                />
               </Box>
               {appointments
-                .filter(item => item.maker === user.regNo && user.role === "Student")
-                .filter(item => item.status >= 2)
+                .filter(
+                  (item) => item.makerNo === user.regNo && user.role === "Student"
+                )
+                .filter((item) => item.status >= 2)
                 .map((item) => (
-                  <Grid item xs={12} sm={6} md={12} key={item._id}>
+                  <Grid item xs={12} sm={6} md={12} key={item._id} marginTop={2} alignItems={"center"} >
                     {item.status === 2 && (
-                      <Card sx={{ border: '2px solid blue', width: '100%' }}>
+                      <Card sx={{ /*border: "2px solid blue"*/ width: "90%", borderRadius: "15px",textAlign:"center" ,alignItems:"center"}}>
                         <CardContent>
-                          <Typography textAlign={'left'}>
+                          <Typography textAlign={"left"}>
                             {item.seeker} accepted the appointment.
                           </Typography>
                         </CardContent>
                       </Card>
                     )}
                     {item.status === 3 && (
-                      <Card sx={{ border: '2px solid blue', width: '100%' }}>
+                      <Card sx={{/* border: "2px solid blue",*/ width: "90%",borderRadius: "15px", alignItems:"center" }}>
                         <CardContent>
-                          <Typography textAlign={'left'}>
+                          <Typography textAlign={"left"}>
                             {item.seeker} rejected the appointment.
                           </Typography>
                         </CardContent>
                       </Card>
                     )}
                     {item.status === 4 && (
-                      <Card sx={{ border: '2px solid blue', width: '100%' }}>
+                      <Card sx={{ /*border: "2px solid blue",*/ width: "90%",borderRadius: "15px", borderLeft:"10px" }}>
                         <CardContent>
-                          <Typography textAlign={'left'}>
+                          <Typography textAlign={"left"}>
                             {item.seeker} cancelled the appointment.
                           </Typography>
                         </CardContent>
                       </Card>
                     )}
-
                   </Grid>
                 ))}
               {appointments
-                .filter(item => item.seeker === user.regNo && user.role === "Lecturer")
-                .filter(item => item.status === 1)
+                .filter(
+                  (item) =>
+                    item.seekerNo === user.regNo && (user.role === "Instructor" || user.role === "Lecturer")
+                )
+                .filter((item) => item.status === 1)
                 .map((item) => (
-                  <Grid item xs={12} sm={6} md={12} key={item._id}>
-                    <Card sx={{ border: '2px solid blue', width: '100%' }}>
+                  <Grid item xs={12} sm={6} md={12} key={item._id} marginTop={2} alignItems={"center"} >
+                    <Card sx={{ /*border: "2px solid blue"*/ width: "90%", borderRadius: "15px",textAlign:"center" ,alignItems:"center"}}>
                       <CardContent>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           with {seeker.fullName}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           with {item.maker}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Reason: {item.subject}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Date: {item.date}
                         </Typography>
-                        <Typography textAlign={'left'}>
+                        <Typography textAlign={"left"}>
                           Time: {item.time}
                         </Typography>
-                        <Button onClick={() => handleUpdate2(item._id)}>accept</Button>
-                        <Button onClick={() => handleUpdate3(item._id)}>delete</Button>
+                        <Button onClick={() => handleUpdate2(item._id)}>
+                          accept
+                        </Button>
+                        <Button onClick={() => handleUpdate3(item._id)}>
+                          delete
+                        </Button>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -231,6 +275,6 @@ export default function HomeStudent() {
           </Grid>
         </Box>
       </Box>
-    </Box>
-  );
+    </Box>
+  );
 }

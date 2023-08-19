@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, CardContent, Chip, CssBaseline, Divider, Grid, List, ListItem, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, CardContent,CardMedia, Chip, CssBaseline, Divider, Grid, List, ListItem, Stack, Toolbar, Typography } from "@mui/material";
 import MainTopbar from "../Components/MainTopbar";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
@@ -42,39 +42,39 @@ export default function SAccountPage () {
         return <div>Loading</div>
       }
   
-      const isStudent = user && user.role === 'Lecturer';
+      const isStudent = user && (user.role === 'Lecturer'||user.role === 'Instructor');
 
 
 ///////////////////////
-async function handleSignup() {
-  setLoading(true);
-  try {
-    await signup(emailRef.current.value, passwordRef.current.value);
-  } catch {
-    alert("Error!");
-  }
-  setLoading(false);
-}
+// async function handleSignup() {
+//   setLoading(true);
+//   try {
+//     await signup(emailRef.current.value, passwordRef.current.value);
+//   } catch {
+//     alert("Error!");
+//   }
+//   setLoading(false);
+// }
 
-async function handleLogin() {
-  setLoading(true);
-  try {
-    await login(emailRef.current.value, passwordRef.current.value);
-  } catch {
-    alert("Error!");
-  }
-  setLoading(false);
-}
+// async function handleLogin() {
+//   setLoading(true);
+//   try {
+//     await login(emailRef.current.value, passwordRef.current.value);
+//   } catch {
+//     alert("Error!");
+//   }
+//   setLoading(false);
+// }
 
-async function handleLogout() {
-  setLoading(true);
-  try {
-    await logout();
-  } catch {
-    alert("Error!");
-  }
-  setLoading(false);
-}
+// async function handleLogout() {
+//   setLoading(true);
+//   try {
+//     await logout();
+//   } catch {
+//     alert("Error!");
+//   }
+//   setLoading(false);
+// }
 
 
 ////////////////////////
@@ -95,41 +95,13 @@ async function handleLogout() {
           <Grid container spacing={0}>
             <Grid item xs={4} md={3} sx={{borderRight: 1, borderColor: 'divider'}}>
               <Box p={2} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Box sx={{ width: '100%', height: 'auto' }}>
+                <Box sx={{ width: '50%', height: 'auto' }}>
                     <Toolbar/>
-
-                    <div id="main">
-                      <div>
-      
-                          <div>Currently logged in as: { currentUser?.email } </div>
-
-                          <div >
-                            <p>Edit profile Photo</p>
-                          </div>
-
-                          {!currentUser && 
-                            <>
-                              <div className="fields">
-                                <input ref={emailRef} placeholder="Email" />
-                                <input ref={passwordRef} type="password" placeholder="Password" />
-                              </div>
-
-                              <button disabled={ loading } onClick={handleSignup}>Sign Up</button>
-                              <button disabled={ loading } onClick={handleLogin}>Log In</button>
-                            </>
-                          }
-
-                          {currentUser && 
-                            <>
-                              <Profile />
-                              <button className="buttonstyle" disabled={ loading || !currentUser } onClick={handleLogout}>Remove Profile Photo</button>
-                            </>
-                          }
-                          </div>
-                        </div>
-
-
-                        
+                  <CardMedia
+                    sx={{ height: 300 }}
+                    image={user.userimage}
+                    title="green iguana"
+                  />
                 </Box>
               </Box>
             </Grid>
@@ -206,11 +178,9 @@ async function handleLogout() {
                 </Stack>
                 <Stack direction = {'row'} flexGrow = {1}sx={{ height:30}}></Stack>
 
-                {isStudent && (
                 <Stack direction='row'  justifyContent='flex-end'  flexGrow={1} sx={{ height: 30 , width: "77%"}}>
-                <a href ="/Testing" ><Button variant='contained' sx={{ width: '20%' }}>Schedule</Button></a> 
+                <a href ="/Testing" ><Button variant='contained' sx={{ width: '100%' }}>Add Appointment</Button></a> 
                 </Stack>
-                )}
 
                 </CardContent>
               </Box>

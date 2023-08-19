@@ -5,7 +5,9 @@ router.route("/add").post((req,res)=>{
 
     const appointmentNo = req.body.appointmentNo;
     const maker = req.body.maker;
+    const makerNo = req.body.makerNo;
     const seeker = req.body.seeker;
+    const seekerNo = req.body.seekerNo;
     const subject = req.body.subject;
     const date = req.body.date;
     const time = req.body.time;
@@ -16,7 +18,9 @@ router.route("/add").post((req,res)=>{
     let newAppointment = new Appointment();
     newAppointment.appointmentNo = appointmentNo;
     newAppointment.maker = maker;
+    newAppointment.makerNo = makerNo;
     newAppointment.seeker = seeker;
+    newAppointment.seekerNo = seekerNo;
     newAppointment.subject = subject;
     newAppointment.date = date;
     newAppointment.time = time;
@@ -114,7 +118,9 @@ router.get("/getOne/:id", async (req, res) => {
         {
           
           maker:req.body.maker ,
+          makerNo:req.body.makerNo ,
           seeker:req.body.seeker,
+          seekerNo:req.body.seekerNo,
           subject:req.body.subject ,
           notes:req.body.notes ,
           date:req.body.date ,
