@@ -1,10 +1,19 @@
-import { AppBar, Box, Button, CardContent,CardMedia, Chip, CssBaseline, Divider, Grid, List, ListItem, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, CardContent, Chip, CssBaseline, Divider, Grid, List, ListItem, Stack, Toolbar, Typography } from "@mui/material";
 import MainTopbar from "../Components/MainTopbar";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
-import { signup, login, logout, useAuth } from "./ImageUpload/firebase";
+//import { signup, login, logout, useAuth } from "./ImageUpload/firebase";
 import Profile from "./ImageUpload/Profile";
 
+import {
+    ref,
+    uploadBytes,
+    getDownloadURL,
+    listAll,
+    list,
+  } from "firebase/storage";
+  import { storage } from "../firebase";
+  import { v4 } from "uuid";
 
 
 
@@ -23,9 +32,9 @@ export default function SAccountPage () {
   
     const [user, setUser] = useState(null);
     const [ loading, setLoading ] = useState(false);
-    const currentUser = useAuth();
-    const emailRef = useRef();
-    const passwordRef = useRef();
+    // const currentUser = useAuth();
+    // const emailRef = useRef();
+    // const passwordRef = useRef();
 
     useEffect(() => {
       const storedUser = localStorage.getItem('User');
@@ -38,11 +47,38 @@ export default function SAccountPage () {
       
     }, []);
 
+    ///////////////////////////////////
+    const [imageUpload, setImageUpload] = useState(null);
+    const [imageUrls, setImageUrls] = useState([]);
+
+    const imagesListRef = ref(storage, "images/");
+    const uploadFile = () => {
+    if (imageUpload == null) return;
+    const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
+    uploadBytes(imageRef, imageUpload).then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((url) => {
+        setImageUrls((prev) => [...prev, url]);
+        });
+    });
+    };
+
+    useEffect(() => {
+    listAll(imagesListRef).then((response) => {
+        response.items.forEach((item) => {
+        getDownloadURL(item).then((url) => {
+            setImageUrls((prev) => [...prev, url]);
+        });
+        });
+    });
+    }, []);
+    ///////////////////////////
+
+
     if (user == null) {
         return <div>Loading</div>
       }
   
-      const isStudent = user && (user.role === 'Lecturer'||user.role === 'Instructor');
+      const isStudent = user && user.role === 'Lecturer';
 
 
 ///////////////////////
@@ -95,13 +131,21 @@ export default function SAccountPage () {
           <Grid container spacing={0}>
             <Grid item xs={4} md={3} sx={{borderRight: 1, borderColor: 'divider'}}>
               <Box p={2} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Box sx={{ width: '50%', height: 'auto' }}>
+                <Box sx={{ width: '100%', height: 'auto' }}>
                     <Toolbar/>
-                  <CardMedia
-                    sx={{ height: 300 }}
-                    image={user.userimage}
-                    title="green iguana"
-                  />
+
+                    <div className="App">
+                    <input
+                        type="file"
+                        onChange={(event) => {
+                        setImageUpload(event.target.files[0]);
+                        }}
+                    />
+                    <button onClick={uploadFile}> Upload Image</button>
+                    </div>
+
+
+                        
                 </Box>
               </Box>
             </Grid>
@@ -178,9 +222,11 @@ export default function SAccountPage () {
                 </Stack>
                 <Stack direction = {'row'} flexGrow = {1}sx={{ height:30}}></Stack>
 
+                {isStudent && (
                 <Stack direction='row'  justifyContent='flex-end'  flexGrow={1} sx={{ height: 30 , width: "77%"}}>
-                <a href ="/Testing" ><Button variant='contained' sx={{ width: '100%' }}>Add Appointment</Button></a> 
+                <a href ="/Demo" ><Button variant='contained' sx={{ width: '20%' }}>Schedule</Button></a> 
                 </Stack>
+                )}
 
                 </CardContent>
               </Box>

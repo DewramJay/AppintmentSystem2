@@ -2,12 +2,19 @@ const router = require("express").Router();
 const { User, validate } = require("../models/user");
 const bcrypt = require("bcrypt");
 
+
 router.post("/", async (req, res) => {
 	try {
 		const { error } = validate(req.body);
 		if (error)
 			return res.status(400).send({ message: error.details[0].message });
 
+		// Check if the email has the required domain
+		// const email = req.body.email;
+		// if (!email.endsWith("@engug.ruh.ac.lk")) {
+		//   return res.status(400).send({ message: "Email must be from engug.ruh.ac.lk domain" });
+		// }
+		
 		const user = await User.findOne({ email: req.body.email });
 		if (user)
 			return res
@@ -70,6 +77,47 @@ router.post("/", async (req, res) => {
         console.log(err)
     })
 })
+
+router.put("/:id", async (req, res) => {
+	try {
+	  const userId = req.params.id;
+	  const userDataToUpdate = req.body;
+  
+	  // Validate the request body
+	  const { error } = validate(userDataToUpdate);
+	  if (error) {
+		return res.status(400).send({ message: error.details[0].message });
+	  }
+  
+	  // Check if the user with the given ID exists
+	  const existingUser = await User.findById(userId);
+	  if (!existingUser) {
+		return res.status(404).send({ message: "User not found" });
+	  }
+  
+	  // Update the user's data
+	  for (const key in userDataToUpdate) {
+		existingUser[key] = userDataToUpdate[key];
+	  }
+	  // Update other fields as needed
+  
+	  // If the password is being updated, hash it
+	  if (userDataToUpdate.password) {
+		const salt = await bcrypt.genSalt(Number(process.env.SALT));
+		const hashPassword = await bcrypt.hash(userDataToUpdate.password, salt);
+		existingUser.password = hashPassword;
+	  }
+  
+	  // Save the updated user data
+	  await existingUser.save();
+  
+	  res.status(200).send({ message: "User updated successfully" });
+	} catch (error) {
+	  res.status(500).send({ message: "Internal Server Error" });
+	}
+  });
+  
+
 
 
 module.exports = router;

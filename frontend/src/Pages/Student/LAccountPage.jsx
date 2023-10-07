@@ -62,7 +62,7 @@ export default function LAccountPage () {
                 <Stack direction = {'row'} flexGrow = {1}sx={{ height:10}}></Stack>
 
 
-                <Stack direction="row" spacing={4}>
+                {/* <Stack direction="row" spacing={4}>
                 <Chip label="Registration No." sx={{ fontSize: "1.0rem", width: "25%" }} />
                 <Chip
                     sx={{ backgroundColor: '#C5ECF1', fontSize: "1.0rem", width: "50%" }}
@@ -73,11 +73,11 @@ export default function LAccountPage () {
                     }
                 />
                 </Stack>
-                <Stack direction = {'row'} flexGrow = {1}sx={{ height:10}}></Stack>
+                <Stack direction = {'row'} flexGrow = {1}sx={{ height:10}}></Stack> */}
 
 
                 <Stack direction="row" spacing={4}>
-                <Chip label="Student Mail" sx={{ fontSize: "1.0rem", width: "25%" }} />
+                <Chip label="Email" sx={{ fontSize: "1.0rem", width: "25%" }} />
                 <Chip
                     sx={{ backgroundColor: '#C5ECF1', fontSize: "1.0rem", width: "50%" }}
                     label={
@@ -118,7 +118,7 @@ export default function LAccountPage () {
                 <Stack direction = {'row'} flexGrow = {1}sx={{ height:30}}></Stack>
 
                 <Stack direction='row'  justifyContent='flex-end'  flexGrow={1} sx={{ height: 30 , width: "77%"}}>
-                <a href ="/Testing" ><Button variant='contained' sx={{ width: '100%' }}>Add Appointment</Button></a> 
+                <a href ="/grp19/shedularStudent" ><Button variant='contained' sx={{ width: '100%' }}>Add Appointment</Button></a> 
                 </Stack>
 
                 </CardContent>

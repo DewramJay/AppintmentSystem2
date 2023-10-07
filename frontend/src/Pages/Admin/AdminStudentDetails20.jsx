@@ -80,7 +80,7 @@ export default function LoginPage () {
               
               <center>
               <div>
-              <a href ="/AddStudent" ><Button variant='contained' style={buttonStyle1} sx={{ width: 500 , alignItems:"center",textalignment:"center", backgroundColor:"#46B7C7"}}>Add Student
+              <a href ="/grp19/AddStudent" ><Button variant='contained' style={buttonStyle1} sx={{ width: 500 , alignItems:"center",textalignment:"center", backgroundColor:"#46B7C7"}}>Add Student
              </Button> </a> 
               
              </div>

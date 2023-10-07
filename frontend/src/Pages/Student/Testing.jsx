@@ -327,7 +327,7 @@ const [edit, setEdit] = useState(null);
 //handling data of rows in grid 
   const getSlotData = (time, seekerNo) => {
     console.log(time);
-    const matchingAppointments = appointments.filter(appointment => (appointment.seekerNo === seekerNo || appointment.makerNo === seekerNo) && appointment.time === time).filter(appointment =>(appointment.status===2||appointment.status===5||appointment.status===1));
+    const matchingAppointments = appointments.filter(appointment => (appointment.seekerNo === seekerNo || appointment.seekerNo === makerNo) && appointment.time === time).filter(appointment =>(appointment.status===2||appointment.status===5||appointment.status===1));
 
     
     if (matchingAppointments.length === 0) {
@@ -349,7 +349,7 @@ const [edit, setEdit] = useState(null);
       const category = matchingAppointments[0].category;
       const appointmentNo = matchingAppointments[0]._id;
       const status = matchingAppointments[0].status;
-      const maker = matchingAppointments[0].maker;
+      const makerNo = matchingAppointments[0].makerNo;
       
       //colors for each category
       const backgroundColor = category === 'one' ? '#F2FB96' : //yellow
@@ -371,6 +371,8 @@ const [edit, setEdit] = useState(null);
             </Box>
           ) : status === 1 ? (
             <p>Pending</p>
+          ) : status === 5 ? (
+            <p>Not Available</p>
           ) : null
         }
         </Box>
@@ -385,6 +387,8 @@ const [edit, setEdit] = useState(null);
             </Box>
           ) : status === 1 ? (
             <p>Pending</p>
+          ) : status === 5 ? (
+            <p>Not Available</p>
           ) : null
         }
         </Box>

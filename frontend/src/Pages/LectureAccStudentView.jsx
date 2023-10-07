@@ -136,7 +136,7 @@ useEffect(() => {
       setUser(res.data);
       localStorage.setItem('Lec', JSON.stringify(res.data));
 
-      window.location = "/LAccountPage";
+      window.location = "/grp19/LAccountPage";
     })
     .catch((err) => {
       alert(err.message);
@@ -224,9 +224,9 @@ useEffect(() => {
                   onClose={handleClose}
                   TransitionComponent={Fade}
                 >
-                  <a href="./saccountpage"><MenuItem onClick={handleClose}>Profile</MenuItem></a>
+                  <a href="./grp19/saccountpage"><MenuItem onClick={handleClose}>Profile</MenuItem></a>
                   <Divider />
-                  <a href="./login"><MenuItem onClick={handleClose}>Logout</MenuItem></a>
+                  <a href="./grp19/login"><MenuItem onClick={handleClose}>Logout</MenuItem></a>
                 </Menu>
               </div>
             </Stack>
@@ -252,7 +252,7 @@ useEffect(() => {
 
           <Grid container spacing={3}>
   {lec
-    .filter(item => item.role === "Lecturer" && item.department === "Department of Electrical and Information Engineering" &&
+    .filter(item => (item.role === "Lecturer"||item.role === "Instructor") && item.department === "Department of Electrical and Information Engineering" &&
     item.fullName
       .toLowerCase()
       .includes(searchQuery.toLowerCase()))

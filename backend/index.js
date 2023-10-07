@@ -6,7 +6,7 @@ const connection = require("./db");
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const appointmentRoutes = require("./routes/appointments");
-
+const nodemailer = require('nodemailer');
 
 // database connection
 connection();

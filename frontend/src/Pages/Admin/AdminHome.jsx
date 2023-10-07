@@ -55,7 +55,7 @@ export default function LoginPage () {
               <div>
                 
               <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"left"}>
-                <a href ="/AddStudent" ><Button variant='contained' style={buttonStyle} sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Add one user</Button></a>  
+                <a href ="/grp19/AddStudent" ><Button variant='contained' style={buttonStyle} sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Add one user</Button></a>  
               </Stack>
               </div>
             {/* <div>
@@ -72,7 +72,7 @@ export default function LoginPage () {
 
               <div>
               <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"left"}>
-                <a href ="/Exceldata" ><Button variant='contained' style={buttonStyle} sx={{ width: 50 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Add many users</Button></a>  
+                <a href ="/grp19/Exceldata" ><Button variant='contained' style={buttonStyle} sx={{ width: 50 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Add many users</Button></a>  
               </Stack>
               </div>
              

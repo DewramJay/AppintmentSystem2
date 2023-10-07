@@ -85,6 +85,13 @@ export default function MainTopbar() {
     
   }, []);
 
+  //clear localstorage
+  const clearLocalStorage = () => {
+    localStorage.clear();
+    //console.log('LocalStorage data cleared.');
+    window.location = "/grp19/login";
+  };
+
     const classes = useStyles();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -146,12 +153,12 @@ export default function MainTopbar() {
                         onClose={handleClose}
                         TransitionComponent={Fade}
                     >
-                        <a href="/saccountpage"><MenuItem onClick={handleClose}>Profile</MenuItem></a>
+                        <a href="/grp19/saccountpage"><MenuItem onClick={handleClose}>Profile</MenuItem></a>
                         <Divider />
                         {/* <a href="/AddStudent"><MenuItem onClick={handleClose}>Settings</MenuItem></a>
                         <Divider /> */}
                         {/* <MenuItem onClick={handleClose}>Logout</MenuItem> */}
-                        <a href="/login"><MenuItem onClick={handleClose}>Logout</MenuItem></a>
+                        <MenuItem onClick={clearLocalStorage}>Logout</MenuItem>
                     </Menu>
                     </div>
 
