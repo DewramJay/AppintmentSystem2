@@ -13,8 +13,10 @@ import {
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import imgback from '../Authentication/imgback.png';
 
 import LoginTopbar from "../Components/LoginTopbar";
+
 import { lightBlue } from "@mui/material/colors";
 import { dark } from "@mui/material/styles/createPalette";
 
@@ -28,7 +30,7 @@ export default function HomePage() {
       >
         <LoginTopbar />
       </AppBar>
-      <Box
+      <Box 
         component="main"
         sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
       >
@@ -36,9 +38,16 @@ export default function HomePage() {
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
           <Toolbar />
+         
 
           <Box sx={{ flexGrow: 1, maxWidth: 2000, height: 850 }}>
-            <Card sx={{ maxWidth: 2000, height: 850 }}>
+            <Card
+              sx={{
+                maxWidth: 2000,
+                height: 850,
+                backgroundImage: imgback,
+              }}
+            >
               <CardActionArea>
                 <CardContent>
                   <Typography
@@ -72,6 +81,7 @@ export default function HomePage() {
                     padding: 2,
                     marginTop: 5,
                     borderRadius: "10px",
+                    backgroundColor: "#198897",
                   }}
                 >
                   <Grid item xs={12} md={6}>
@@ -123,6 +133,7 @@ export default function HomePage() {
           </Box>
         </Box>
       </Box>
-    </Box>
-  );
+         
+    </Box>
+  );
 }

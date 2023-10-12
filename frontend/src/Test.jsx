@@ -42,7 +42,7 @@ import StaffDetailsElec from './Pages/StaffDetailsElec';
 import StudentViewElecStaff from './Pages/StudentViewElecStaff';
 import StudentViewCivilStaff from './Pages/StudentViewCivilStaff.jsx';
 import StudentViewMechStaff from './Pages/StudentViewMechStaff';
-import Testing from './Pages/Student/Testing';
+
 import LAccountPage from './Pages/Student/LAccountPage';
 import Schedular from './Pages/Student/Schedular';
 import { ShedularStudent } from './Pages/Student/ShedularStudent';
@@ -172,8 +172,7 @@ console.log(token);
             <Route path="/StudentViewMechStaff" element={<StudentViewMechStaff/>} >
             </Route>
 
-            <Route path="/Testing" element={<Testing/>} >
-            </Route>
+          
 
             <Route path="/LAccountPage" element={<LAccountPage/>} >
             </Route>

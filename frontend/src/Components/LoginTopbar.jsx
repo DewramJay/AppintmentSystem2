@@ -19,7 +19,11 @@ export default function LoginTopbar() {
           <Stack direction = {'row'} flexGrow = {1} alignItems="center" justifyContent="flex-start" spacing={5}>
             <StyledAvatar src="https://upload.wikimedia.org/wikipedia/en/6/65/LOGO_OF_RUHUNA.jpg"  sx={{ width: 56, height: 75 }} variant="square"/>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer" }}>
-                UNIVERSITY OF RUHUNA
+                
+
+              
+                      UNIVERSITY OF RUHUNA
+             
                 </Typography>
                 <Stack spacing={1} direction="row">
                 <a href ="/grp19/login" ><Button variant="Text">You are not logging (Login)</Button></a>  

@@ -1,23 +1,37 @@
-import { AppBar, Box, Button, Card, CardContent, Chip, CssBaseline, Grid, Toolbar, Modal, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CssBaseline,
+  Grid,
+  Toolbar,
+  Modal,
+  Typography,
+} from "@mui/material";
 import MainTopbar from "../Components/MainTopbar";
 import SideDrawer from "../Components/SideDrawer";
 import { useState, useEffect } from "react";
 import { apiUrl } from "../config";
 import axios from "axios";
 
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
+
 export default function HomeStudent() {
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('User');
+    const storedUser = localStorage.getItem("User");
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
 
       setUser(parsedUser.User);
     }
-
   }, []);
 
   useEffect(() => {
@@ -38,18 +52,16 @@ export default function HomeStudent() {
 
   const [seeker, setSeeker] = useState([]);
 
-
   function getSeekerName(name) {
     axios
-      .get(apiUrl +`/api/users/getName/${name}`)
+      .get(apiUrl + `/api/users/getName/${name}`)
       .then((res) => {
-        return(res.data.User.fullName);
+        return res.data.User.fullName;
         //console.log(res.data.User);
       })
       .catch((err) => {
         alert(err.message);
       });
-      
   }
 
   //Popup card
@@ -67,49 +79,25 @@ export default function HomeStudent() {
 
   ////
 
-
   //get appointment detial to popup
   const [appointment, setAppointment] = useState([]);
-  
+
   function getApp(data) {
     axios
-    .get(apiUrl + `/api/appointments/getOne/${data}`)
-    .then((res) => {
-      setAppointment(res.data);
-      localStorage.setItem('Appointment', JSON.stringify(res.data));
-    })
-    .catch((err) => {
-      alert(err.message);
-    });
-
-  
-  }
-
-
-  function handleUpdate2(appointmentId) {
-    const status = 2;
-    axios.patch(apiUrl +`/api/appointments/update/${appointmentId}`, { status })
-      .then((response) => {
-        console.log(response.data); // Handle successful update
-      })
-      .catch((error) => {
-        console.error(error); // Handle error
-      });
-    axios
-      .get(apiUrl +"/api/appointments/")
+      .get(apiUrl + `/api/appointments/getOne/${data}`)
       .then((res) => {
-        // Reverse the appointment list
-        const reversedAppointments = res.data.reverse();
-        setAppointments(reversedAppointments);
+        setAppointment(res.data);
+        localStorage.setItem("Appointment", JSON.stringify(res.data));
       })
       .catch((err) => {
         alert(err.message);
       });
-  };
+  }
 
-  function handleUpdate3(appointmentId) {
-    const status = 3;
-    axios.patch(apiUrl +`/api/appointments/update/${appointmentId}`, { status })
+  function handleUpdate2(appointmentId) {
+    const status = 2;
+    axios
+      .patch(apiUrl + `/api/appointments/update/${appointmentId}`, { status })
       .then((response) => {
         console.log(response.data); // Handle successful update
       })
@@ -126,50 +114,78 @@ export default function HomeStudent() {
       .catch((err) => {
         alert(err.message);
       });
-  };
+  }
+
+  function handleUpdate3(appointmentId) {
+    const status = 3;
+    axios
+      .patch(apiUrl + `/api/appointments/update/${appointmentId}`, { status })
+      .then((response) => {
+        console.log(response.data); // Handle successful update
+      })
+      .catch((error) => {
+        console.error(error); // Handle error
+      });
+    axios
+      .get(apiUrl + "/api/appointments/")
+      .then((res) => {
+        // Reverse the appointment list
+        const reversedAppointments = res.data.reverse();
+        setAppointments(reversedAppointments);
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  }
 
   const slotBackgroundColor = (category) => {
-  
-      const backgroundColor = category === 'one' ? '#4CAF50' : //green
-                       category === 'two' ? '#FEBE00' : //yellow
-                       category === 'three' ? '#2196F3' : //blue
-                       category === 'four' ? '#FB9696' : //red
-                       'inherit';
+    const backgroundColor =
+      category === "one"
+        ? "#4CAF50" //green
+        : category === "two"
+        ? "#FEBE00" //yellow
+        : category === "three"
+        ? "#2196F3" //blue
+        : category === "four"
+        ? "#FB9696" //red
+        : "inherit";
 
-      return backgroundColor;
-  }
+    return backgroundColor;
+  };
 
   //time date seperator
   function DateTime(dateString) {
-    
-  
     // Parse the date string
     const date = new Date(dateString);
-  
+
     // Extract date components
     const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
-    const day = date.getDate().toString().padStart(2, '0');
-  
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+    const day = date.getDate().toString().padStart(2, "0");
+
     // Extract time components
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const seconds = date.getSeconds().toString().padStart(2, '0');
-  
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const seconds = date.getSeconds().toString().padStart(2, "0");
+
     const dateStyle = {
-      marginTop: '1px',
-      marginBottom: '0', // Adjust the margin bottom as needed
+      marginTop: "1px",
+      marginBottom: "0", // Adjust the margin bottom as needed
     };
 
     return (
       <Grid>
-        <p style={dateStyle}>Date: {year}-{month}-{day}</p>
-        <p style={dateStyle}>Time: {hours}:{minutes}</p>
+        <p style={dateStyle}>
+          Date: {year}-{month}-{day}
+        </p>
+        <p style={dateStyle}>
+          Time: {hours}:{minutes}
+        </p>
       </Grid>
     );
   }
 
-  const isStudent = user && user.role === 'Student';
+  const isStudent = user && user.role === "Student";
 
   return (
     <Box sx={{ display: "flex", borderRadius: "100px" }}>
@@ -187,8 +203,8 @@ export default function HomeStudent() {
       >
         <Toolbar />
         <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={10} >
-            <Grid item xs={12} md={6} >
+          <Grid container spacing={10}>
+            <Grid item xs={12} md={6}>
               <Box p={2}>
                 <Chip
                   label="Scheduled Appointments"
@@ -196,9 +212,14 @@ export default function HomeStudent() {
                 />
                 {isStudent && (
                   <a href="/grp19/StaffDetailsElec">
-                    <Button borderLeft="10px"
+                    <Button
+                      borderLeft="10px"
                       variant="contained"
-                      sx={{ width: 100, backgroundColor: "#46B7C7", left:"100px" }}
+                      sx={{
+                        width: 100,
+                        backgroundColor: "#46B7C7",
+                        left: "100px",
+                      }}
                     >
                       VIEW
                     </Button>
@@ -207,12 +228,27 @@ export default function HomeStudent() {
               </Box>
               {appointments
                 .filter(
-                  (item) => item.makerNo === user.email && user.role === "Student"
+                  (item) =>
+                    item.makerNo === user.email && user.role === "Student"
                 )
                 .filter((item) => item.status === 2)
                 .map((item) => (
-                  <Grid onClick={toggleModal} item xs={12} sm={6} md={12} key={item.appointmentNo} marginTop={2} >
-                    <Card   sx={{ /*border: "2px solid blue",*/ width: "80%", borderRadius: "20px" ,bgcolor: "#C5ECF1"}}>
+                  <Grid
+                    onClick={toggleModal}
+                    item
+                    xs={12}
+                    sm={6}
+                    md={12}
+                    key={item.appointmentNo}
+                    marginTop={2}
+                  >
+                    <Card
+                      sx={{
+                        /*border: "2px solid blue",*/ width: "80%",
+                        borderRadius: "20px",
+                        bgcolor: "#C5ECF1",
+                      }}
+                    >
                       <CardContent onClick={() => getApp(item._id)}>
                         <Typography textAlign={"left"}>
                           with {item.seeker}
@@ -250,25 +286,39 @@ export default function HomeStudent() {
                         <Typography variant="h6" id="modal-title">
                           ff
                         </Typography>
-                        
+
                         <Button onClick={toggleModal} variant="contained">
                           CLOSE
                         </Button>
                       </Box>
                     </Modal>
                     {/*  */}
-
                   </Grid>
                 ))}
               {appointments
                 .filter(
                   (item) =>
-                    (item.seekerNo === user.email && item.makerNo !== user.email) && (user.role === "Instructor" || user.role === "Lecturer")
+                    item.seekerNo === user.email &&
+                    item.makerNo !== user.email &&
+                    (user.role === "Instructor" || user.role === "Lecturer")
                 )
                 .filter((item) => item.status === 2)
                 .map((item) => (
-                  <Grid item xs={12} sm={6} md={12} key={item.appointmentNo} marginTop={2} >
-                    <Card sx={{ /*border: "2px solid blue",*/ width: "80%", borderRadius: "20px" ,bgcolor: slotBackgroundColor(item.category)}}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={12}
+                    key={item.appointmentNo}
+                    marginTop={2}
+                  >
+                    <Card
+                      sx={{
+                        /*border: "2px solid blue",*/ width: "80%",
+                        borderRadius: "20px",
+                        bgcolor: slotBackgroundColor(item.category),
+                      }}
+                    >
                       <CardContent>
                         <Typography textAlign={"left"}>
                           with {item.maker}
@@ -286,18 +336,17 @@ export default function HomeStudent() {
             </Grid>
             <Grid item xs={12} md={6} sx={{ bgcolor: "#C5ECF1" }} marginTop={2}>
               <Box p={2}>
-              <Chip
-                label="Notifications"
-                sx={{
-                  fontSize: "1.2rem",
-                  backgroundColor: "#FFFFFF",
-                  position: "relative",
-                  height : "40px"
-                }}
-              > 
-              
-              </Chip>
-              <Grid
+                <Chip
+                  label="Notifications"
+                  sx={{
+                    fontSize: "1.2rem",
+                    backgroundColor: "#FFFFFF",
+                    position: "relative",
+                    height: "40px",
+                  }}
+                ></Chip>
+
+                <Grid
                   style={{
                     position: "relative",
                     bottom: 0,
@@ -306,20 +355,47 @@ export default function HomeStudent() {
                     height: "12px",
                     borderRadius: "50%",
                     backgroundColor: "red",
+                    left: "115px",
+                    top: "-35px",
                   }}
                 />
               </Box>
 
               {appointments
                 .filter(
-                  (item) => item.makerNo === user.email && user.role === "Student"
+                  (item) =>
+                    item.makerNo === user.email && user.role === "Student"
                 )
                 .filter((item) => item.status >= 2)
                 .map((item) => (
-                  <Grid item xs={12} sm={6} md={12} key={item._id} marginTop={2} alignItems={"center"} >
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={12}
+                    key={item._id}
+                    marginTop={2}
+                    alignItems={"center"}
+                   //height={"500px"}
+                  >
                     {item.status === 2 && (
-                      <Card sx={{ /*border: "2px solid blue"*/ width: "90%", borderRadius: "15px",textAlign:"center" ,alignItems:"center"}}>
+                      <Card
+                        sx={{
+                          /*border: "2px solid blue"*/ width: "90%",
+
+                          borderRadius: "15px",
+                          textAlign: "center",
+                          alignItems: "center",
+                        }}
+                      >
                         <CardContent>
+                          <IconButton
+                            type="button"
+                            sx={{ p: "10px", left:"200px",top:"-10px" }}
+                            aria-label="search"
+                          >
+                            <CloseIcon />
+                          </IconButton>
                           <Typography textAlign={"left"}>
                             {item.seeker} accepted the appointment.
                           </Typography>
@@ -327,7 +403,13 @@ export default function HomeStudent() {
                       </Card>
                     )}
                     {item.status === 3 && (
-                      <Card sx={{/* border: "2px solid blue",*/ width: "90%",borderRadius: "15px", alignItems:"center" }}>
+                      <Card
+                        sx={{
+                          /* border: "2px solid blue",*/ width: "90%",
+                          borderRadius: "15px",
+                          alignItems: "center",
+                        }}
+                      >
                         <CardContent>
                           <Typography textAlign={"left"}>
                             {item.seeker} rejected the appointment.
@@ -336,7 +418,13 @@ export default function HomeStudent() {
                       </Card>
                     )}
                     {item.status === 4 && (
-                      <Card sx={{ /*border: "2px solid blue",*/ width: "90%",borderRadius: "15px", borderLeft:"10px" }}>
+                      <Card
+                        sx={{
+                          /*border: "2px solid blue",*/ width: "90%",
+                          borderRadius: "15px",
+                          borderLeft: "10px",
+                        }}
+                      >
                         <CardContent>
                           <Typography textAlign={"left"}>
                             {item.seeker} cancelled the appointment.
@@ -349,12 +437,28 @@ export default function HomeStudent() {
               {appointments
                 .filter(
                   (item) =>
-                    item.seekerNo === user.email && (user.role === "Instructor" || user.role === "Lecturer")
+                    item.seekerNo === user.email &&
+                    (user.role === "Instructor" || user.role === "Lecturer")
                 )
                 .filter((item) => item.status === 1)
                 .map((item) => (
-                  <Grid item xs={12} sm={6} md={12} key={item._id} marginTop={2} alignItems={"center"} >
-                    <Card sx={{ /*border: "2px solid blue"*/ width: "90%", borderRadius: "15px",textAlign:"center" ,alignItems:"center"}}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={12}
+                    key={item._id}
+                    marginTop={2}
+                    alignItems={"center"}
+                  >
+                    <Card
+                      sx={{
+                        /*border: "2px solid blue"*/ width: "90%",
+                        borderRadius: "15px",
+                        textAlign: "center",
+                        alignItems: "center",
+                      }}
+                    >
                       <CardContent>
                         <Typography textAlign={"left"}>
                           with {item.maker}
@@ -379,6 +483,7 @@ export default function HomeStudent() {
           </Grid>
         </Box>
       </Box>
-    </Box>
-  );
+         
+    </Box>
+  );
 }

@@ -115,7 +115,7 @@ export default function LoginPage() {
                 </CenterHeaderCard>
                 <CardContent>
                   <Divider />
-                  <Grid container spacing={2}>
+                  <Grid container spacing={2} sx={{backgroundColor: "#198897",}}>
                   <Grid item xs={12} md={6}>
                     <Typography>
                       The Faculty of Engineering of University of Ruhuna was established on 1st July 1999 at Hapugala, Galle.

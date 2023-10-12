@@ -484,9 +484,14 @@ export const ShedularStudent = () => {
           <Toolbar>
           <Stack direction = {'row'} flexGrow = {1} alignItems="center" justifyContent="flex-start" spacing={1}>
             <StyledAvatar src="https://upload.wikimedia.org/wikipedia/en/6/65/LOGO_OF_RUHUNA.jpg"  sx={{ width: 56, height: 75 }} variant="square"/>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer" }}>
-                UNIVERSITY OF RUHUNA
-                </Typography>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer" }}>
+               
+               <a href="/HomeStudent">
+                   <Button variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer",color:"white" ,fontSize:"20px"}} >
+                     UNIVERSITY OF RUHUNA
+                   </Button>
+                 </a>
+               </Typography>
 
                 <Stack direction="row" spacing={2}>
                 {/* <Search flexGrow = {10}>
