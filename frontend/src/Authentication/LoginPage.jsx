@@ -4,12 +4,25 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from 'react-router-dom';
 import LoginTopbar from "../Components/LoginTopbar";
-import {apiUrl} from "../config";
+import {apiUrl, comb} from "../config";
 
 export default function LoginPage() {
   const [data, setData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [user, setUser] = useState(null); // Define the 'user' state
+
+
+
+  // const token = localStorage.getItem("token");
+
+
+  //       if (token) {
+
+  //           return <Navigate to="/login" />;
+  //       }
+
+
+
 
   const handleChange = ({ currentTarget: input }) => {
     setData({ ...data, [input.name]: input.value });
@@ -22,7 +35,7 @@ export default function LoginPage() {
       const { data: res } = await axios.post(url, data);
       localStorage.setItem("token", res.data);
       getUser();
-      window.location = "/homestudent";
+      window.location = comb+"/homestudent";
       alert("success");
     } catch (error) {
       alert("error");
@@ -37,7 +50,12 @@ export default function LoginPage() {
       .get(apiUrl +`/api/users/getOne/${data.email}`)
       .then((res) => {
         setUser(res.data);
-        localStorage.setItem('User', JSON.stringify(res.data));
+
+        let userData = res.data;
+
+        userData.authenticated = true;
+
+        localStorage.setItem('User', JSON.stringify(userData));
       })
       .catch((err) => {
         alert(err.message);
@@ -79,13 +97,16 @@ export default function LoginPage() {
                       />
                       {error && <div>{error}</div>}
                       <div>
-                        <Link to="/AdminLogin"> If you are an admin, click here to log in</Link>
+                        <Link to="/grp19/AdminLogin"> If you are an admin, click here to log in</Link>
                       </div>
                       <Stack spacing={2} direction="row" sx={{ width: '450px' }} alignItems='center'>
                         <center>
-                        <Button type="submit" variant='contained' onClick={handleSubmit} sx={{ width: '500px', backgroundColor: "#46B7C7" }}>
+                        <Button type="submit" variant='contained' onClick={handleSubmit} sx={{ width: '500px', backgroundColor: "#46B7C7", marginBottom:1}}>
                           Login
                         </Button>
+                        <a href ="/grp19/SignInPage" ><Button type="submit" variant='contained' sx={{ width: '500px', backgroundColor: "#46B7C7" }}>
+                          Sign up
+                        </Button></a>
                         </center>
                       </Stack>
                     </Stack>

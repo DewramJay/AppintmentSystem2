@@ -49,7 +49,7 @@ export default function HomeStudent () {
                 <div>
                 
                 <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"left"}>
-                 <a href ="/LectureAccStudentView" > <Button variant='contained' style={buttonStyle}  sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Lecturers
+                 <a href ="/grp19/LectureAccStudentView" > <Button variant='contained' style={buttonStyle}  sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>Lecturers
                  </Button>  </a>
                 </Stack>
                 </div>
@@ -58,7 +58,7 @@ export default function HomeStudent () {
                 <div>
                 
                 <Stack spacing={2} direction="row" sx={{ width: '450' }} alignItems={"left"}>
-                 <a href ="/InstructorAccStudentView" > <Button variant='contained' style={buttonStyle}  sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>instructors
+                 <a href ="/grp19/InstructorAccStudentView" > <Button variant='contained' style={buttonStyle}  sx={{ width: 500 , alignItems:"left",textalignment:"left", backgroundColor:"#46B7C7"}}>instructors
                  </Button>  </a>
                 </Stack>
                 </div>

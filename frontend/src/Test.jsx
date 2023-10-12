@@ -1,6 +1,7 @@
 
-import * as React from 'react';
+import  React, {useEffect, useState} from 'react';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
+import {  Navigate, Outlet } from "react-router-dom";
 
 
 import HomeStudent from './Pages/HomeStudent';
@@ -43,11 +44,28 @@ import StudentViewCivilStaff from './Pages/StudentViewCivilStaff.jsx';
 import StudentViewMechStaff from './Pages/StudentViewMechStaff';
 import Testing from './Pages/Student/Testing';
 import LAccountPage from './Pages/Student/LAccountPage';
+import Schedular from './Pages/Student/Schedular';
+import { ShedularStudent } from './Pages/Student/ShedularStudent';
+import SignInPage from './Authentication/SignInPage';
 
 
 export default function Test() {
 
-  // const basename = '/grp19';
+  //const basename = '/grp19';
+
+  const token = localStorage.getItem("token");
+
+console.log(token);
+
+
+    const PrivateRouter = () => {
+
+        if (token) {
+            return <Outlet />;
+        } else {
+            return <Navigate to="/login" />;
+        }
+    };
 
 
   
@@ -58,16 +76,21 @@ export default function Test() {
 
           <Routes>
             <Route exact path="/" element={<HomePage/>}>
-             
             </Route>
   
             <Route path="/login"  element={< LoginPage/>}>
             </Route>
+
+            <Route path="/SignInPage"  element={< SignInPage/>}>
+            </Route>
+
+            <Route element={<PrivateRouter user_type={"admin"} />}>
+
   
             <Route path="/homestudent" element={<HomeStudent/>} >
             </Route>
 
- 	    <Route path="/saccountpage" element={<SAccountPage/>} >
+ 	          <Route path="/saccountpage" element={<SAccountPage/>} >
             </Route>
 
             <Route path="/AddStudent" element={<AddStudent/>} >
@@ -153,6 +176,13 @@ export default function Test() {
             </Route>
 
             <Route path="/LAccountPage" element={<LAccountPage/>} >
+            </Route>
+
+            <Route path="/Schedular" element={<Schedular/>} >
+            </Route>
+
+            <Route path="/ShedularStudent" element={<ShedularStudent/>} >
+            </Route>
             </Route>
 
           </Routes>

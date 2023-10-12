@@ -4,12 +4,27 @@ const mongoose =  require('mongoose');
 const Schema = mongoose.Schema;
 
 const appointmentSchema = new Schema({
-
-    appointmentNo: {
+    title: {
         type : String,
         required : false
     },
-
+   
+    startDate: {
+        type : Date,
+        required : false
+    },
+    endDate: {
+        type : Date,
+        required : false
+    },
+    status: {
+        type : Number ,
+        required : false
+    },
+    id: {
+        type : Number ,
+        required : false
+    },
     maker: {
         type : String,
         required : false
@@ -17,31 +32,22 @@ const appointmentSchema = new Schema({
     seeker: {
         type : String,
         required : false
+    },   
+    category: {
+        type : String,
+        default: "zero"
     },
-    subject: {
+    makerNo: {
+        type : String,
+        required : false
+    },
+    seekerNo: {
         type : String,
         required : false
     },
     notes: {
         type : String,
         required : false
-    },
-    date: {
-        type : String,
-        required : false
-    },
-    time: {
-        type : String,
-        required : false
-    },
-    category: {
-        type : String,
-        required : true
-    },
-    status: {
-        type : Number,
-        required : false,
-        // default : 0
     }
 })
 

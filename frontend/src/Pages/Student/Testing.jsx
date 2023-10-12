@@ -5,7 +5,7 @@ import axios from 'axios';
 import {  AppBar, Box,  Divider,  Grid, Stack, Toolbar, Typography, Popover, InputLabel, Select, MenuItem, FormControlLabel,Switch, FormLabel, FormGroup } from "@mui/material";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Dialog, ListItem, List, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, FormControl } from '@mui/material';
 
-import MainTopbar from '../../Components/LectureAccStudentViewTopbar';
+
 
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -16,7 +16,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 
 import { apiUrl } from '../../config';
 
-
+import MainTopbar from "../../Components/MainTopbar";
 
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
@@ -54,7 +54,8 @@ const Testing = () => {
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      setmaker(parsedUser.User.regNo);
+      setmaker(parsedUser.User.fullName);
+      setmakerNo(parsedUser.User.regNo);
       //setUser(parsedUser.User);
 
     }
@@ -68,7 +69,8 @@ useEffect(() => {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
 
-      setseeker(parsedUser.User.regNo);
+      setseeker(parsedUser.User.fullName);
+      setseekerNo(parsedUser.User.regNo);
     }
     
   }, []);
@@ -87,9 +89,6 @@ useEffect(() => {
     }
   }
     
-  
-
-
   //getting appointment data from DB
   const [appointments, setappointments] = useState([]);
   const [subject, setsubject] = useState('');
@@ -98,7 +97,9 @@ useEffect(() => {
   //console.log(time);
 	//const [date, setdate] = useState("");
 	const [maker, setmaker] = useState("");
+  const [makerNo, setmakerNo] = useState("");
   const [seeker, setseeker] = useState("");
+  const [seekerNo, setseekerNo] = useState("");
   const [category, setCategory] = useState("");
   const status = 1;
   
@@ -121,7 +122,9 @@ const [Tempory, setTempory] = useState("");
             time,
             date: date.format("ddd DD MMMM"),
             maker,
+            makerNo,
             seeker,
+            seekerNo,
             notes,
             category,
             status 
@@ -129,6 +132,7 @@ const [Tempory, setTempory] = useState("");
 		
 		axios.post(apiUrl + "/api/appointments/add",newAppointment).then(()=>{
 			alert("Appointment Added")
+      window.location.reload();
 		}).catch((err)=>{
 			alert(err)
 		})
@@ -171,7 +175,7 @@ const [Tempory, setTempory] = useState("");
 
 
       const matchingAppointments = appointments.filter(appointment => (appointment.seeker === seeker || appointment.seeker === maker) && appointment.time === time);
-      if (User.role === "Lecturer" && matchingAppointments.length !== 0) { 
+      if ((User.role === "Lecturer"||User.role === "Instructor" )&& matchingAppointments.length !== 0) { 
         settime(time);
       }
       };
@@ -255,6 +259,7 @@ const [edit, setEdit] = useState(null);
       .catch((error) => {
         alert(error.message); // Handle error
       });
+      window.location.reload();
     };
 
   //get User details from localsorage
@@ -296,7 +301,7 @@ const [edit, setEdit] = useState(null);
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
   
-    const isLecturer = User && User.role === 'Lecturer';
+    const isLecturer = User && (User.role === 'Lecturer');
     const isStudent = User && User.role === 'Student';
 
     //dayepicker
@@ -320,12 +325,13 @@ const [edit, setEdit] = useState(null);
     };
   
 //handling data of rows in grid 
-  const getSlotData = (time, seeker) => {
-    //console.log(appointments);
-    const matchingAppointments = appointments.filter(appointment => (appointment.seeker === seeker || appointment.seeker === maker) && appointment.time === time).filter(appointment =>(appointment.status===2||appointment.status===5));
+  const getSlotData = (time, seekerNo) => {
+    console.log(time);
+    const matchingAppointments = appointments.filter(appointment => (appointment.seekerNo === seekerNo || appointment.seekerNo === makerNo) && appointment.time === time).filter(appointment =>(appointment.status===2||appointment.status===5||appointment.status===1));
 
     
     if (matchingAppointments.length === 0) {
+      
       return (
         <div>
           {isStudent  && (  
@@ -343,8 +349,8 @@ const [edit, setEdit] = useState(null);
       const category = matchingAppointments[0].category;
       const appointmentNo = matchingAppointments[0]._id;
       const status = matchingAppointments[0].status;
-      const maker = matchingAppointments[0].maker;
-
+      const makerNo = matchingAppointments[0].makerNo;
+      
       //colors for each category
       const backgroundColor = category === 'one' ? '#F2FB96' : //yellow
                        category === 'two' ? '#96C1FB' : //blue
@@ -356,21 +362,38 @@ const [edit, setEdit] = useState(null);
       return (
         
         <div>
-        {isStudent  && User.regNo === maker &&  (  
+        {isStudent  && (User.regNo === makerNo)&&  (  
         <Box>
-        <Box aria-describedby={id} variant="contained"  style={{ backgroundColor }}>
-          {subject}
-        </Box>
+        {
+          status === 2 ? (
+            <Box aria-describedby={id} variant="contained" style={{ backgroundColor }}>
+              {subject}
+            </Box>
+          ) : status === 1 ? (
+            <p>Pending</p>
+          ) : status === 5 ? (
+            <p>Not Available</p>
+          ) : null
+        }
         </Box>
         )}
 
-        {isStudent  && User.regNo !== maker &&  (  
+        {isStudent  && (User.regNo !== makerNo) && (  
         <Box>
-        <Box aria-describedby={id} variant="contained"  style={{ backgroundColor:'#FB9696' }}>
-          Not Available
-        </Box>
+          {
+          status === 2 ? (
+            <Box aria-describedby={id} variant="contained" style={{ backgroundColor }}>
+              Not Available
+            </Box>
+          ) : status === 1 ? (
+            <p>Pending</p>
+          ) : status === 5 ? (
+            <p>Not Available</p>
+          ) : null
+        }
         </Box>
         )}
+       
        
         {isLecturer  && (status===2)&&(
         <Box onMouseEnter={() => handleDetail(appointmentNo)}>
@@ -385,6 +408,7 @@ const [edit, setEdit] = useState(null);
           {subject}
         </Box>
         </Box>
+        
         )}
        
         <Popover
@@ -397,9 +421,11 @@ const [edit, setEdit] = useState(null);
             horizontal: 'left',
           }}
         >
-          <Typography sx={{ p: 2 }}>{app.seeker}</Typography>
-          <Typography sx={{ p: 2 }}>{app.maker}</Typography>
-          <Typography sx={{ p: 2 }}>{app.subject}</Typography>
+          <Typography sx={{ p: 2 }}>With : {app.seeker}</Typography>
+          <Typography sx={{ p: 2 }}>For  : {app.subject}</Typography>
+          <Typography sx={{ p: 2 }}>Date : {app.date}</Typography>
+          <Typography sx={{ p: 2 }}>Time : {app.time}</Typography>
+
           <Button onClick={handleEdit}>Edit</Button>
           <Button onClick={()=>{handleUpdate4(app._id)}}>cancel appointment</Button>
         </Popover>
@@ -407,24 +433,6 @@ const [edit, setEdit] = useState(null);
         <Dialog open={edit !== null} onClose={handleEditClose}>
                         <DialogTitle>{`Appointment for ${app.time} `}</DialogTitle>
                         <DialogContent>
-
-                       
-
-                        {/* <TextField
-                            autoFocus
-                            margin="dense"
-                            name='time'
-                            id="time"
-                            label="time"
-                            type="text"
-                            fullWidth
-                            value={app.time}
-                            onChange={(e)=>{
-                              settime(e.target.value);
-              
-                            }}
-                        /> */}
-
                         <FormControl fullWidth>
                           <InputLabel id="demo-simple-select-label">time</InputLabel>
                           <Select
@@ -493,6 +501,32 @@ const [edit, setEdit] = useState(null);
     }
   }
 
+
+  //get background color
+  const getBackgroundColorForSlot = (time, seekerNo) => {
+    //console.log(appointments);
+    const matchingAppointments = appointments.filter(appointment => (appointment.seekerNo === seekerNo || appointment.seekerNo === makerNo) && appointment.time === time).filter(appointment =>(appointment.status===2||appointment.status===5));
+
+    
+    if (matchingAppointments.length === 0) {
+      const backgroundColor = 'transparent'
+      return backgroundColor; 
+
+    }else {
+      const category = matchingAppointments[0].category;
+      
+      //colors for each category
+      const backgroundColor = category === 'one' ? '#F2FB96' : //yellow
+                       category === 'two' ? '#96C1FB' : //blue
+                       category === 'three' ? '#96FBA5' : //green
+                       category === 'four' ? '#FB9696' : //red
+                       'inherit';
+
+      return backgroundColor;
+    }
+  }
+
+ 
   
     
 
@@ -520,7 +554,9 @@ const [edit, setEdit] = useState(null);
                 time,
                 date: date.format("ddd DD MMMM"),
                 maker,
-                seeker:User.regNo,
+                makerNo,
+                seeker,
+                seekerNo:User.regNo,
                 notes,
                 category:"four",
                 status:5 
@@ -531,7 +567,11 @@ const [edit, setEdit] = useState(null);
         }).catch((err)=>{
           alert(err)
         })
+        window.location.reload();
       }
+
+
+      
 
       //available
       const removeBlock = (e) =>{
@@ -546,7 +586,71 @@ const [edit, setEdit] = useState(null);
         .catch((error) => {
           console.log(error);
         });
+        window.location.reload();
 
+      }
+
+
+
+      //full day block
+        //slide switch
+        const [switchState2, setSwitchState2] = useState(false);
+
+        const handleSwitchChange2 = (event) => {
+          setSwitchState2(event.target.checked);
+          console.log(switchState2);
+        };
+
+      const BlockFullDay = (e) =>{
+        e.preventDefault();
+
+        for (let i = 0; i < 12; i++) {
+          const time = new Date(startTime.getTime() + i * 30 * 60000); // Increment time by 30 minutes
+          const formattedTime = time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+          const newAppointment = {
+            subject:"Not Available",
+                time:formattedTime,
+                date: date.format("ddd DD MMMM"),
+                maker,
+                makerNo,
+                seeker,
+                seekerNo:User.regNo,
+                notes,
+                category:"four",
+                status:5 
+            }
+            
+            axios.post(apiUrl + "/api/appointments/add",newAppointment).then(()=>{
+              window.location.reload();
+              // alert("done")
+            }).catch((err)=>{
+              alert(err)
+            })
+        }
+      }
+
+      const removeBlockFullDay = (e) =>{
+        e.preventDefault();
+
+        for (let i = 0; i < 12; i++) {
+          const time = new Date(startTime.getTime() + i * 30 * 60000); // Increment time by 30 minutes
+          const formattedTime = time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+          const newAppointment = {
+            subject:"Not Available",
+            time:formattedTime,
+            date: date.format("ddd DD MMMM"),
+            maker,
+            seeker:User.regNo,
+            notes,
+            category:"four",
+            status:5 
+            }
+            
+            axios.post(apiUrl + "/api/appointments/add",newAppointment).then(()=>{
+            }).catch((err)=>{
+              alert(err)
+            })
+        }
       }
     
       // filling time column of the data grid
@@ -554,12 +658,13 @@ const [edit, setEdit] = useState(null);
       for (let i = 0; i < 12; i++) {
         const time = new Date(startTime.getTime() + i * 30 * 60000); // Increment time by 30 minutes
         const formattedTime = time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        // const slotBackgroundColor = getBackgroundColorForSlot(formattedTime, seekerNo);
         //getapppointments(formattedTime);
         rows.push(
           <TableRow key={i}>
             
-            <TableCell >{formattedTime}</TableCell>
-            <TableCell >{getSlotData(formattedTime, seeker)}</TableCell>
+            <TableCell style={{ width:'40%' }}>{formattedTime}</TableCell>
+            <TableCell style={{ backgroundColor: getBackgroundColorForSlot(formattedTime, seekerNo) }} >{getSlotData(formattedTime, seekerNo)}</TableCell>
           </TableRow>
         );
       }
@@ -641,6 +746,39 @@ const [edit, setEdit] = useState(null);
                             </TableRow>
                         </TableHead>
                         <TableBody>{rows}</TableBody>
+                        
+                        {(User.role === "Lecturer"||User.role === 'Instructor') && (
+                    // <Dialog open={availibility !== null} onClose={handleAvailibilityClose}>
+                    //     <DialogTitle>{`Schedule for ${time} `}</DialogTitle>
+                    //     <DialogContent>
+                        
+                        
+
+                        <FormControl component="fieldset">
+                          <FormGroup aria-label="position" row>
+                            <FormControlLabel
+                              value="start"
+                              control={<Switch color="primary" checked={switchState2} onChange={handleSwitchChange2} />}
+                              
+                              label="not available"
+                              labelPlacement="start"
+                            />
+                          </FormGroup>
+                          <Button onClick={switchState2 ? BlockFullDay : removeBlock }>Save</Button>
+                        </FormControl>
+
+
+                        
+                    //     </DialogContent>
+                    //     <DialogActions>
+                    //     <Button onClick={handleClose}>Cancel</Button>
+                    //     <Button onClick={switchState ? blockSchedule : removeBlock }>Save</Button>
+                    //     {/* disabled={!subject} */}
+                    //     </DialogActions>
+                    // </Dialog>
+                    )}
+
+
                         </Table>
                     </TableContainer>
 

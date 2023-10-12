@@ -1,29 +1,84 @@
 const router = require("express").Router();
 const Appointment = require("../models/appointment");
+const nodemailer = require('nodemailer');
+const { User } = require("../models/user");
 
-router.route("/add").post((req,res)=>{
 
-    const appointmentNo = req.body.appointmentNo;
+
+router.route("/add").post(async (req,res)=>{
+
+
+    const title = req.body.title;
+    const id = isNaN(req.body.id) ? 0 : parseInt(req.body.id);
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
+    const status = isNaN(req.body.status) ? 0 : parseInt(req.body.status);
     const maker = req.body.maker;
     const seeker = req.body.seeker;
-    const subject = req.body.subject;
-    const date = req.body.date;
-    const time = req.body.time;
-    const notes = req.body.notes;
     const category = req.body.category;
-    const status = isNaN(req.body.status) ? 0 : parseInt(req.body.status);
+    const makerNo = req.body.makerNo;
+    const seekerNo = req.body.seekerNo;
+    const notes = req.body.notes;
 
     let newAppointment = new Appointment();
-    newAppointment.appointmentNo = appointmentNo;
+    newAppointment.title = title;
+    newAppointment.id = id;
+    newAppointment.startDate = startDate;
+    newAppointment.endDate = endDate;
+    newAppointment.status = status;
     newAppointment.maker = maker;
     newAppointment.seeker = seeker;
-    newAppointment.subject = subject;
-    newAppointment.date = date;
-    newAppointment.time = time;
-    newAppointment.notes = notes;
     newAppointment.category = category;
-    newAppointment.status = status;
+    newAppointment.makerNo = makerNo;
+    newAppointment.seekerNo = seekerNo;
+    newAppointment.notes = notes;
+
     
+
+/*******
+ * 
+ * 
+ * 
+ */
+
+
+  
+//const reciever = await User.findOne({ 'regNo': seekerNo});
+
+
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'appointmentmanagementsystem56@gmail.com',
+    pass: 'kuqshjlrxfuazyct'
+  }
+});
+
+
+
+const mailOptions = {
+  from: 'appointmentmanagementsystem56@gmail.com',
+  to: seekerNo,
+  subject: 'New appointment received',
+  text: 'There is a new appointment at ' + startDate
+};
+
+if (seekerNo) { // Check if seekerNo is not null
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+      // do something useful
+    }
+  });
+}
+
+
+/*** */
+
+
     newAppointment.save().then(()=>{
         res.json("Appointment created")
     }).catch((err)=>{
@@ -79,6 +134,18 @@ router.get("/getOne/:id", async (req, res) => {
     }
   }); 
 
+  router.get("/getOne/:id", async (req, res) => {
+    const filter = { _id: req.params.id };
+    
+    const data = await User.findOne(filter,{password:0});
+    
+    if (data) {
+      return res.status(200).send({ success: true, Appointment: data });
+    } else {
+      return res.status(400).send({ success: false, msg: "Data not found" });
+    }
+    }); 
+
   router.patch("/update/:id", async (req, res) => {
     try {
       const appointmentId = req.params.id;
@@ -89,6 +156,9 @@ router.get("/getOne/:id", async (req, res) => {
         appointmentId,
         { status },
         { new: true }
+
+
+        
       );
   
       if (!updatedAppointment) {
@@ -100,36 +170,70 @@ router.get("/getOne/:id", async (req, res) => {
       console.log(error);
       res.status(500).json({ success: false, msg: "Internal server error" });
     }
+
+
+
+
   });
 
-  router.put("/updateAll/:updateId", async (req, res) => {
-    const filter = { _id : req.params.updateId };
-    const options = {
-      upsert: true,
-      new: true,
+
+router.put("/updateAll/:updateId", async (req, res) => {
+  const filter = { _id: req.params.updateId };
+  const options = {
+    upsert: true,
+    new: true,
+  };
+
+  try {
+    const result = await Appointment.findOneAndUpdate(
+      filter,
+      {
+        title: req.body.title,
+        id: parseInt(req.body.id),
+        maker: req.body.maker,
+        seeker: req.body.seeker,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        category: req.body.category,
+        status: parseInt(req.body.status),
+        makerNo: req.body.makerNo,
+        seekerNo: req.body.seekerNo,
+        notes: req.body.notes,
+      },
+      options
+    );
+
+    // Send email notification after successfully updating the appointment
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'appointmentmanagementsystem56@gmail.com',
+        pass: 'kuqshjlrxfuazyct'
+      }
+    });
+
+    const mailOptions = {
+      from: 'appointmentmanagementsystem56@gmail.com',
+      to: req.body.makerNo, // Use the updated email address if necessary
+      subject: 'Appointment Updated',
+      text: 'Your appointment with' + req.body.seeker + 'have been updated.'
     };
-    try {
-      const result = await Appointment.findOneAndUpdate(
-        filter,
-        {
-          
-          maker:req.body.maker ,
-          seeker:req.body.seeker,
-          subject:req.body.subject ,
-          notes:req.body.notes ,
-          date:req.body.date ,
-          time:req.body.time ,
-          category:req.body.ategory,
-          status:parseInt(req.body.status)
 
-        },
-        options
-      );
-      res.status(200).send({ appointment: result });
-    } catch (error) {
-      res.status(400).send({ success: false, msg: error });
-    }
-  });
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+        // Do something useful after sending the email
+      }
+    });
+
+    res.status(200).send({ appointment: result });
+  } catch (error) {
+    res.status(400).send({ success: false, msg: error });
+  }
+});
+
 
 
   router.route("/delete/:Id").delete(async(req,res)=>{

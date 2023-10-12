@@ -6,6 +6,17 @@ import React from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useState, useEffect } from "react";
 
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+  width: 56,
+  height: 75,
+  //backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/en/6/65/LOGO_OF_RUHUNA.jpg)',
+  backgroundSize: 'cover',
+  //filter: 'grayscale(100%)', // Convert image to grayscale
+  border: '2px solid white', // Add a border to create a separation effect
+  borderRadius:'25px',
+}));
+
 const useStyles = styled((theme) => ({
     root: {
       width: '100%',
@@ -68,9 +79,18 @@ export default function MainTopbar() {
       const parsedUser = JSON.parse(storedUser);
 
       setUser(parsedUser.User);
+      // console.log(user);
     }
     
+    
   }, []);
+
+  //clear localstorage
+  const clearLocalStorage = () => {
+    localStorage.clear();
+    //console.log('LocalStorage data cleared.');
+    window.location = "/grp19/login";
+  };
 
     const classes = useStyles();
 
@@ -94,13 +114,13 @@ export default function MainTopbar() {
         <AppBar position="static" sx={{ backgroundColor:'#198897'}}>
           <Toolbar>
           <Stack direction = {'row'} flexGrow = {1} alignItems="center" justifyContent="flex-start" spacing={1}>
-            <Avatar src="https://upload.wikimedia.org/wikipedia/en/6/65/LOGO_OF_RUHUNA.jpg"  sx={{ width: 56, height: 75 }} variant="square"/>
+            <StyledAvatar src="https://upload.wikimedia.org/wikipedia/en/6/65/LOGO_OF_RUHUNA.jpg"  sx={{ width: 56, height: 75 }} variant="square"/>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer" }}>
                 UNIVERSITY OF RUHUNA
                 </Typography>
 
                 <Stack direction="row" spacing={2}>
-                <Search flexGrow = {10}>
+                {/* <Search flexGrow = {10}>
                   <SearchIconWrapper>
                     <SearchIcon />
                   </SearchIconWrapper>
@@ -108,7 +128,7 @@ export default function MainTopbar() {
                     placeholder="Search…"
                     inputProps={{ 'aria-label': 'search' }}
                   />
-                </Search>
+                </Search> */}
                 
                     <div>
                     <Button  onClick={handleClick}>
@@ -133,11 +153,12 @@ export default function MainTopbar() {
                         onClose={handleClose}
                         TransitionComponent={Fade}
                     >
-                        <a href="/saccountpage"><MenuItem onClick={handleClose}>Profile</MenuItem></a>
+                        <a href="/grp19/saccountpage"><MenuItem onClick={handleClose}>Profile</MenuItem></a>
                         <Divider />
-                        <a href="/AddStudent"><MenuItem onClick={handleClose}>Settings</MenuItem></a>
-                        <Divider />
-                        <MenuItem onClick={handleClose}>Logout</MenuItem>
+                        {/* <a href="/AddStudent"><MenuItem onClick={handleClose}>Settings</MenuItem></a>
+                        <Divider /> */}
+                        {/* <MenuItem onClick={handleClose}>Logout</MenuItem> */}
+                        <MenuItem onClick={clearLocalStorage}>Logout</MenuItem>
                     </Menu>
                     </div>
 

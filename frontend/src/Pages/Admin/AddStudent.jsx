@@ -36,7 +36,7 @@ export default function AddStudent() {
       alert("created");
 			console.log(res.message);
 		} catch (error) {
-      alert("ttr");
+      alert(error);
 			if (
 				error.response &&
 				error.response.status >= 400 &&

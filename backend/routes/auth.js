@@ -35,4 +35,32 @@ const validate = (data) => {
 	return schema.validate(data);
 };
 
+router.post("/check-password", async (req, res) => {
+	try {
+	  // Retrieve the user by email from the request body
+	  const user = await User.findOne({ email: req.body.email });
+  
+	  // If the user doesn't exist, respond with an error
+	  if (!user) {
+		return res.status(401).send({ message: "User not found" });
+	  }
+  
+	  // Compare the provided password with the stored hashed password
+	  const validPassword = await bcrypt.compare(
+		req.body.password,
+		user.password
+	  );
+  
+	  // Respond with a message indicating whether the password is correct
+	  if (validPassword) {
+		res.status(200).send({ message: "Password is correct" });
+	  } else {
+		res.status(401).send({ message: "Password is incorrect" });
+	  }
+	} catch (error) {
+		console.error(error);
+	  res.status(500).send({ message: "Internal Server Error" });
+	}
+  });
+
 module.exports = router;
