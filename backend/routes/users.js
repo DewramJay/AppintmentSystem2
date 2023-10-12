@@ -116,6 +116,30 @@ router.put("/:id", async (req, res) => {
 	  res.status(500).send({ message: "Internal Server Error" });
 	}
   });
+
+  router.patch("/updateImage/:id", async (req, res) => {
+    try {
+      const _id = req.params.id;
+      const { userimage } = req.body;
+  
+      // Find the appointment by ID and update the status
+      const updatedUserImage = await User.findByIdAndUpdate(
+        _id,
+        { userimage },
+        { new: true }
+        
+      );
+  
+      if (!updatedUserImage) {
+        return res.status(404).json({ success: false, msg: "User not found" });
+      }
+  
+      res.json({ success: true, user: updatedUserImage });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, msg: "Internal server error" });
+    }
+  });
   
 
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 //import MainTopbar from "../Components/MainTopbar";
-import { Divider,  Fade, Menu,Avatar, Box, Button, Chip, Toolbar,InputBase} from "@mui/material";
+import { Divider,  Fade, Menu,Avatar, Box, Button, Chip, Toolbar,InputBase, TextField, Input} from "@mui/material";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {  alpha } from '@mui/material/styles';
 
@@ -122,6 +122,19 @@ export const ShedularStudent = () => {
             <MenuItem value={"two"}>group meeting</MenuItem>
             <MenuItem value={"three"}>online meeting</MenuItem>
           </Select>
+          <TextField
+                            autoFocus
+                            name='notes'
+                            margin="dense"
+                            label="Notes"
+                            type="text"
+                            fullWidth
+                            value={notes}
+                            onChange={(e)=>{
+                              setNotes(e.target.value);
+              
+                            }}
+                        />
         </FormControl>
       );
       
@@ -208,6 +221,7 @@ export const ShedularStudent = () => {
         const [makerNo, setmakerNo] = useState("");
         const [seekerNo, setseekerNo] = useState("");
         const [category, setCategory] = useState("");
+        const [notes, setNotes] = useState("");
         
         const [date, setdate] = React.useState(dayjs);
       
@@ -273,7 +287,7 @@ export const ShedularStudent = () => {
             if (added) {
               const startingAddedId = prevData.length > 0 ? prevData[prevData.length - 1].id + 1 : 0;
               const status = 1;
-              updatedData = { title:"" ,status, id:startingAddedId, seeker:seeker, maker:maker,seekerNo:seekerNo, makerNo:makerNo, category,  ...added };
+              updatedData = { title:"" ,status, id:startingAddedId, seeker:seeker, maker:maker,seekerNo:seekerNo, makerNo:makerNo, category, notes,  ...added };
               
               axios.post(apiUrl+"/api/appointments/add",updatedData).then(()=>{
                 alert("Appointment Added")

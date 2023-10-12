@@ -1,9 +1,11 @@
-import { AppBar, Box, Button, CardContent, Chip, CssBaseline, Divider, Grid, List, ListItem, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, CardContent, Chip, CssBaseline, Divider, Grid, List, ListItem, Stack, Toolbar, Typography, Modal, TextField, } from "@mui/material";
 import MainTopbar from "../Components/MainTopbar";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
 //import { signup, login, logout, useAuth } from "./ImageUpload/firebase";
-import Profile from "./ImageUpload/Profile";
+//import Profile from "./ImageUpload/Profile";
+import axios from "axios";
+import {apiUrl, comb} from "../config";
 
 import {
     ref,
@@ -49,36 +51,206 @@ export default function SAccountPage () {
 
     ///////////////////////////////////
     const [imageUpload, setImageUpload] = useState(null);
-    const [imageUrls, setImageUrls] = useState([]);
+    const [userimage, setUserimage] = useState("");
 
     const imagesListRef = ref(storage, "images/");
     const uploadFile = () => {
     if (imageUpload == null) return;
     const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
-    uploadBytes(imageRef, imageUpload).then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((url) => {
-        setImageUrls((prev) => [...prev, url]);
-        });
-    });
+    //console.log(imageRef);
+    // uploadBytes(imageRef, imageUpload).then((snapshot) => {
+    //     getDownloadURL(snapshot.ref).then((url) => {
+    //     setUserimage(url);
+    //     console.log(userimage);
+    //     axios.patch(apiUrl+`/api/users/updateImage/${user._id}`, { userimage })
+    //             .then((response) => {
+    //               console.log(response.data); // Handle successful update
+                  
+    //               axios
+    //                 .get(apiUrl +`/api/users/getOne/${user.email}`)
+    //                 .then((res) => {
+    //                   //setUser(res.data);
+    //                   //console.log("gg");
+    //                   let userData = res.data;
+
+    //                   userData.authenticated = true;
+
+    //                   localStorage.setItem('User', JSON.stringify(userData));
+    //                   //window.location.reload()
+    //                 })
+    //                 .catch((err) => {
+    //                   alert(err.message);
+    //                 });
+
+
+    //             })
+    //             .catch((error) => {
+    //               console.error(error); // Handle error
+    //             }); 
+
+    //         });   
+    // });
+
+    async function updateUserImageWithDelay(imageRef, imageUpload, user) {
+      // Upload image and get download URL
+      const snapshot = await uploadBytes(imageRef, imageUpload);
+      const url = await getDownloadURL(snapshot.ref);
+  
+      // Set user image and add a delay of 2 seconds (2000 milliseconds)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+  
+      // Update user image on the server
+      try {
+          const response = await axios.patch(apiUrl+`/api/users/updateImage/${user._id}`, { userimage: url });
+          console.log(response.data); // Handle successful update
+  
+          // Get updated user data
+          const res = await axios.get(apiUrl +`/api/users/getOne/${user.email}`);
+          let userData = res.data;
+          userData.authenticated = true;
+  
+          // Store updated user data in local storage
+          localStorage.setItem('User', JSON.stringify(userData));
+          window.location.reload();
+      } catch (error) {
+          console.error(error); // Handle error
+          alert(error.message);
+      }
+  }
+  
+  // Call the async function with appropriate arguments
+  updateUserImageWithDelay(imageRef, imageUpload, user);
+  
+    
+            
+
     };
 
-    useEffect(() => {
-    listAll(imagesListRef).then((response) => {
-        response.items.forEach((item) => {
-        getDownloadURL(item).then((url) => {
-            setImageUrls((prev) => [...prev, url]);
-        });
-        });
-    });
-    }, []);
+
     ///////////////////////////
+
+    ///////////change password layout part///////////////
+
+      const [modalOpen, setModalOpen] = useState(false);
+
+      const toggleModal = () => {
+        setModalOpen(!modalOpen);
+        setVerify(true);
+      };
+
+      if (modalOpen) {
+        document.body.classList.add("active-modal");
+      } else {
+        document.body.classList.remove("active-modal");
+      }
+
+      const [formData, setFormData] = useState({
+        password: "",
+        //field2: "",
+        // Add more fields as needed
+      });
+
+      const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        // Handle form submission logic here
+        console.log("Form Data:", formData);
+
+        // Close the modal after form submission
+        toggleModal();
+      };
+
+    ///////////////////////////////////////////////
+
+    const [oldPassword,setOldPassword] = useState('');
+    const [verify,setVerify] = useState(true);
+
+    ///////verify old password/////////////////////
+
+
+    const verifyPassword = (e) =>{
+      e.preventDefault();
+    
+    
+    const requestData = {
+      email: user.email,
+      password: oldPassword
+    };
+
+    //const data = JSON.stringify(requestData);
+    //console.log(requestData);
+    
+    axios.post(apiUrl + "/api/auth/check-password", requestData)
+      .then(response => {
+        console.log(response.data.message); // Output the server's response message
+        setVerify(false);
+      })
+      .catch(error => {
+        console.error("An error occurred:", error);
+      });
+
+    
+
+      
+
+  }
+  ///////////////////////////////////////////////////
+
+  ////////////////change password process//////////////
+
+  function mergeObjects(obj1, obj2) {
+    for (const key in obj2) {
+      if (obj2.hasOwnProperty(key)) {
+        obj1[key] = obj2[key];
+      }
+    }
+  }
+
+  function ChangePassword(e){
+    e.preventDefault();
+    mergeObjects(user,formData);
+    
+
+
+    axios.put(apiUrl + `/api/users/${user._id}`, { 
+		  firstName: user.firstName,
+		  lastName: user.lastName,
+		  fullName: user.fullName,
+		  regNo: user.regNo,
+		  email: user.email,
+		  department: user.department,
+		  telephoneNo: user.telephoneNo,
+		  role: user.role,
+		  password: user.password,
+		  userimage: user.userimage,
+     })
+      .then((response) => {
+        alert('Password changed successfully!');// Handle successful update
+      })
+      .catch((error) => {
+        console.log(user);
+        alert(error.message); // Handle error
+      });
+      //window.location.reload();
+    };
+
+
+
+  /////////////////////////////////////////////////////
 
 
     if (user == null) {
         return <div>Loading</div>
       }
   
-      const isStudent = user && user.role === 'Lecturer';
+      const isStudent = user && user.role === 'Lecturer'||'Instructor';
 
 
 ///////////////////////
@@ -133,7 +305,9 @@ export default function SAccountPage () {
               <Box p={2} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Box sx={{ width: '100%', height: 'auto' }}>
                     <Toolbar/>
-
+                    <div>
+                    <img src={user.userimage} alt="LectureImg" style={{ width: '254px', height: '276px' }} />
+                    </div>
                     <div className="App">
                     <input
                         type="file"
@@ -224,12 +398,88 @@ export default function SAccountPage () {
 
                 {isStudent && (
                 <Stack direction='row'  justifyContent='flex-end'  flexGrow={1} sx={{ height: 30 , width: "77%"}}>
-                <a href ="/Demo" ><Button variant='contained' sx={{ width: '20%' }}>Schedule</Button></a> 
+                <a href ="/grp19/Schedular" ><Button variant='contained' sx={{ width: '20%' }}>Schedule</Button></a> 
                 </Stack>
                 )}
 
                 </CardContent>
               </Box>
+
+              <Button
+                color="primary"
+                onClick={toggleModal}
+                borderLeft="10px"
+                variant="contained"
+                sx={{
+                  width: 200,
+                  backgroundColor: "#46B7C7",
+                  left: "590px",
+                }}
+              >
+                Change Details
+              </Button>
+
+              <Modal
+                open={modalOpen}
+                onClose={toggleModal}
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+              >
+                <Box
+                  className="modal-content"
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: 400, // Set the desired width for your form
+                    bgcolor: "white", // Set the background color to white
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: "10px",
+                  }}
+                >
+                  <Typography variant="h4" id="modal-title">
+                    Form Title
+                  </Typography>
+                  <form onSubmit={handleSubmit}>
+                    {/* Input fields for your form */}
+                    <TextField
+                      label="Old Password"
+                      name="oldpassword"
+                      value={oldPassword}
+                      onChange={(e)=> {setOldPassword(e.target.value);}}
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                    />
+                    <TextField
+                      label="New Password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                      disabled={verify}
+                    />
+                    {/* Add more input fields as needed */}
+
+                    <Button onClick={verifyPassword}>
+                      verify
+                    </Button>
+
+                    {/* Submit button */}
+                    <Button onClick={ChangePassword} type="submit" variant="contained" color="primary" >
+                      Submit
+                    </Button>
+                  </form>
+                  <Button onClick={toggleModal} variant="contained">
+                    CLOSE
+                  </Button>
+                </Box>
+              </Modal>
+
             </Grid>
           </Grid>
           

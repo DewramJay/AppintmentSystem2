@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
 	department: { type: String, required: true },
 	telephoneNo: { type: Number, required: true },
 	role:{ type: String, required: true },
-	password: { type: String, required: true }
+	password: { type: String, required: true },
+	userimage: { type: String, required: false },
 });
 
 userSchema.methods.generateAuthToken = function () {
@@ -27,6 +28,7 @@ const User = mongoose.model("user", userSchema);
 
 const validate = (data) => {
 	const schema = Joi.object({
+		userimage: Joi.string().required().label("userimage"),
 		firstName: Joi.string().required().label("First Name"),
 		lastName: Joi.string().required().label("Last Name"),
 		fullName: Joi.string().required().label("Full Name"),
@@ -36,6 +38,7 @@ const validate = (data) => {
 		telephoneNo: Joi.number().required().label("Telephone No"),
 		role: Joi.string().required().label("Role"),
 		password: Joi.string().required().label("Password"),
+		
 	});
 	return schema.validate(data);
 };

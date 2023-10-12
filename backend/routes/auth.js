@@ -58,6 +58,7 @@ router.post("/check-password", async (req, res) => {
 		res.status(401).send({ message: "Password is incorrect" });
 	  }
 	} catch (error) {
+		console.error(error);
 	  res.status(500).send({ message: "Internal Server Error" });
 	}
   });

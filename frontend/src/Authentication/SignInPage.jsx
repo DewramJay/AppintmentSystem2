@@ -95,6 +95,7 @@ export default function SignInPage() {
             telephoneNo,
             password,
             role,
+            userimage: " "
             
         }
 		try {

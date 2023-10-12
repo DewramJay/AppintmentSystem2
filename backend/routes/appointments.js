@@ -170,38 +170,70 @@ router.get("/getOne/:id", async (req, res) => {
       console.log(error);
       res.status(500).json({ success: false, msg: "Internal server error" });
     }
+
+
+
+
   });
 
-  router.put("/updateAll/:updateId", async (req, res) => {
-    const filter = { _id : req.params.updateId };
-    const options = {
-      upsert: true,
-      new: true,
+
+router.put("/updateAll/:updateId", async (req, res) => {
+  const filter = { _id: req.params.updateId };
+  const options = {
+    upsert: true,
+    new: true,
+  };
+
+  try {
+    const result = await Appointment.findOneAndUpdate(
+      filter,
+      {
+        title: req.body.title,
+        id: parseInt(req.body.id),
+        maker: req.body.maker,
+        seeker: req.body.seeker,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        category: req.body.category,
+        status: parseInt(req.body.status),
+        makerNo: req.body.makerNo,
+        seekerNo: req.body.seekerNo,
+        notes: req.body.notes,
+      },
+      options
+    );
+
+    // Send email notification after successfully updating the appointment
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'appointmentmanagementsystem56@gmail.com',
+        pass: 'kuqshjlrxfuazyct'
+      }
+    });
+
+    const mailOptions = {
+      from: 'appointmentmanagementsystem56@gmail.com',
+      to: req.body.makerNo, // Use the updated email address if necessary
+      subject: 'Appointment Updated',
+      text: 'Your appointment with' + req.body.seeker + 'have been updated.'
     };
-    try {
-      const result = await Appointment.findOneAndUpdate(
-        filter,
-        {
-          title:req.body.title ,
-          id:parseInt(req.body.id),
-          maker:req.body.maker ,
-          seeker:req.body.seeker,
-          startDate:req.body.startDate ,
-          endDate:req.body.endDate ,
-          category:req.body.ategory,
-          status:parseInt(req.body.status),
-          makerNo:req.body.makerNo ,
-          seekerNo:req.body.seekerNo,
-          notes:req.body.notes 
 
-        },
-        options
-      );
-      res.status(200).send({ appointment: result });
-    } catch (error) {
-      res.status(400).send({ success: false, msg: error });
-    }
-  });
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+        // Do something useful after sending the email
+      }
+    });
+
+    res.status(200).send({ appointment: result });
+  } catch (error) {
+    res.status(400).send({ success: false, msg: error });
+  }
+});
+
 
 
   router.route("/delete/:Id").delete(async(req,res)=>{

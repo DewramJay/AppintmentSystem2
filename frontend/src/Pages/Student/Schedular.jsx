@@ -1,7 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 
-import { Divider,  Fade, Menu,Avatar, Box, Button, Chip, Toolbar,InputBase} from "@mui/material";
+import { Divider,  Fade, Menu,Avatar, Box, Button, Chip, Toolbar,InputBase, Input, TextField, Checkbox, FormControlLabel} from "@mui/material";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { styled, alpha } from '@mui/material/styles';
 
@@ -86,25 +86,21 @@ const Appointment = ({ children, style, ...restProps }) => {
 
 const Schedular = () => {
    
-const CustomFormControl = ({ value, onChange }) => (
-  null
-    // <FormControl fullWidth>
-    //   <InputLabel id="demo-simple-select-label">Category</InputLabel>
-    //   <Select
-    //     labelId="demo-simple-select-label"
-    //     id="demo-simple-select"
-    //     value={value}
-    //     label="category"
-    //     onChange={(e) => {
-    //       setCategory(e.target.value);
-    //     }}
-    //   >
-    //     <MenuItem value={"one to one meeting"}>one</MenuItem>
-    //     <MenuItem value={"Group Meeting"}>two</MenuItem>
-    //     <MenuItem value={"Online Meeting"}>three</MenuItem>
-    //   </Select>
-    // </FormControl>
-  );
+  const CustomFormControl = ({ value, onChange }) => {
+    const handleCheckboxChange = (event) => {
+      onChange(event.target.checked);
+      setCreateRecurring(event.target.checked)
+    };
+  
+    return (
+      <FormControl fullWidth>
+        <FormControlLabel
+          control={<Checkbox checked={value} onChange={handleCheckboxChange} />}
+          label="Enable Recurring Appointments"
+        />
+      </FormControl>
+    );
+  };
   
   const TextEditor = (props) => {
     // eslint-disable-next-line react/destructuring-assignment
@@ -120,16 +116,17 @@ const CustomFormControl = ({ value, onChange }) => (
   };
   
   const BoolEditor = (props) => {
-    // return <AppointmentForm.BooleanEditor
-    // { ...props}
-    // />
     return null;
   };
   
+  const [week, setWeek] = useState("");
+  const [createRecurring, setCreateRecurring] = useState(false);
+
   const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
-    // const onCustomFieldChange = (nextValue) => {
-    //   onFieldChange({ customField: nextValue });
-    // };
+    const onCustomFieldChange = (nextValue) => {
+      //onFieldChange({ customField: nextValue });
+      setWeek(nextValue);
+    };
     const onCustomFormChange = (nextValue) => {
       onFieldChange({ customForm: nextValue });
     };
@@ -140,22 +137,42 @@ const CustomFormControl = ({ value, onChange }) => (
         onFieldChange={onFieldChange}
         {...restProps}
       >
-        {/* <AppointmentForm.Label
+        <AppointmentForm.Label
           text="Other details"
           type="title"
-        /> */}
-        {/* <AppointmentForm.TextEditor
+        />
+        <AppointmentForm.TextEditor
           value={appointmentData.customField}
           onValueChange={onCustomFieldChange}
           placeholder="Custom field"
-        /> */}
-        {/* <CustomFormControl
+        />
+        <CustomFormControl
           value={appointmentData.customForm}
           onChange={onCustomFormChange}
-        /> */}
+        />
+
+        
       </AppointmentForm.BasicLayout>
     );
   };
+
+  /////////recurring appointment//////////////
+  const getNextDays = (startDate) => {
+    const nextDays = [];
+    
+    let currentDate = dayjs(startDate).add(7, 'day'); // Start from the next week
+    console.log(currentDate);
+    for (let i = 0; i < 3; i++) {
+      while (currentDate.day() !== 3) {
+        // 3 represents Wednesday in dayjs (0 is Sunday, 6 is Saturday)
+        currentDate = currentDate.add(1, 'day');
+      }
+      nextDays.push(currentDate);
+      currentDate = currentDate.add(7, 'day');
+    }
+    return nextDays;
+  };
+  ////////////////////////////////////////////
   
   
     
@@ -236,8 +253,38 @@ const CustomFormControl = ({ value, onChange }) => (
     const commitChanges = ({ added, changed, deleted }) => {
       setData((prevData) => {
         let updatedData = [];
+
+        if (added && createRecurring) {
+          // Add appointments for the next 3 Wednesdays only if createRecurring is true
+          const nextDays = getNextDays(updatedData.startDate); // Assuming you have a startDate property in your appointment data
+          
+          
+          nextDays.forEach((date) => {
+            //let i = 0;
+            const startingAddedId = prevData.length > 0 ? prevData[prevData.length - 1].id + 1 : 0;
+            console.log(startingAddedId);
+            const recurringAppointment = {
+              title: updatedData.title, // Use the same title as the initial appointment
+              startDate: date, // Set the date to the next Wednesday
+              id:startingAddedId,
+              category:"zero",
+              status: 2,
+              seeker:seeker, 
+              seekerNo:seekerNo, 
+              makerNo:makerNo,
+
+            };
+
+            axios.post(apiUrl + '/api/appointments/add', recurringAppointment).then(() => {
+              // Handle successful addition of recurring appointments
+            }).catch((err) => {
+              // Handle error
+              console.error(err);
+            });
+          });
+        }
   
-        if (added) {
+        if (added && !createRecurring) {
           const startingAddedId = prevData.length > 0 ? prevData[prevData.length - 1].id + 1 : 0;
           const status = 2;
           const category = "zero";
@@ -251,8 +298,8 @@ const CustomFormControl = ({ value, onChange }) => (
             alert(err)
           }) 
   
-          console.log("ff"+updatedData);
-  
+          //console.log("ff"+updatedData);
+
         }
         if (changed) {
         //   updatedData = updatedData.map((appointment) =>
@@ -482,7 +529,7 @@ const CustomFormControl = ({ value, onChange }) => (
          </Toolbar>
         </AppBar>
           <Stack spacing={10} direction="row" flexGrow={1} alignItems="center" justifyContent="flex-start">
-            <Paper sx={{ flexGrow: 1, width: '30%', backgroundColor: '', margin: 20 }}>
+            <Paper sx={{ flexGrow: 1, width: '30%', backgroundColor: '', margin: 0 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
                   Selected Date: {selectedDate.format('ddd DD MMMM')}
@@ -497,7 +544,7 @@ const CustomFormControl = ({ value, onChange }) => (
                 />
               </LocalizationProvider>
             </Paper>
-        
+            <Paper sx={{ flexGrow: 1, width: '30%', backgroundColor: '', margin: 0 }}>
             <Scheduler data={data} >
               <ViewState currentDate={selectedDate.toDate()} />
               <EditingState onCommitChanges={(changes) => commitChanges(changes, category)} />
@@ -509,6 +556,7 @@ const CustomFormControl = ({ value, onChange }) => (
               <AppointmentForm basicLayoutComponent={BasicLayout} textEditorComponent={InputComponent} booleanEditorComponent={BoolEditor}  />
               
               </Scheduler>
+            </Paper>
           </Stack>
         </Grid>
       );
