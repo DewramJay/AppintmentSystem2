@@ -260,6 +260,10 @@ export const ShedularStudent = () => {
       
         useEffect(() => {
           fetchAppointments();
+
+          const intervalId = setInterval(fetchAppointments, 5000);
+
+           return () => clearInterval(intervalId);
         }, [seekerNo]);
       
        
@@ -485,7 +489,11 @@ export const ShedularStudent = () => {
           <Stack direction = {'row'} flexGrow = {1} alignItems="center" justifyContent="flex-start" spacing={1}>
             <StyledAvatar src="https://upload.wikimedia.org/wikipedia/en/6/65/LOGO_OF_RUHUNA.jpg"  sx={{ width: 56, height: 75 }} variant="square"/>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer" }}>
-                UNIVERSITY OF RUHUNA
+                <a href="/grp19/HomeStudent">
+                    <Button variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer",color:"white" ,fontSize:"20px"}} >
+                      UNIVERSITY OF RUHUNA
+                    </Button>
+                  </a>
                 </Typography>
 
                 <Stack direction="row" spacing={2}>

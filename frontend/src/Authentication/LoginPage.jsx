@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from 'react-router-dom';
 import LoginTopbar from "../Components/LoginTopbar";
-import {apiUrl, comb} from "../config";
+import {apiUrl} from "../config";
 
 export default function LoginPage() {
   const [data, setData] = useState({ email: "", password: "" });
@@ -35,7 +35,7 @@ export default function LoginPage() {
       const { data: res } = await axios.post(url, data);
       localStorage.setItem("token", res.data);
       getUser();
-      window.location = comb+"/homestudent";
+      window.location = "/grp19/homestudent";
       alert("success");
     } catch (error) {
       alert("error");

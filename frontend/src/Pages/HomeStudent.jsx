@@ -5,9 +5,13 @@ import { useState, useEffect } from "react";
 import { apiUrl } from "../config";
 import axios from "axios";
 
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
+
 export default function HomeStudent() {
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
+  const [appoint, setAppoint] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('User');
@@ -21,20 +25,39 @@ export default function HomeStudent() {
   }, []);
 
   useEffect(() => {
-    function getAppointments() {
-      axios
-        .get(apiUrl + "/api/appointments/")
-        .then((res) => {
-          // Reverse the appointment list
-          const reversedAppointments = res.data.reverse();
-          setAppointments(reversedAppointments);
-        })
-        .catch((err) => {
-          alert(err.message);
-        });
+    const storedUser = localStorage.getItem('Appointment');
+
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      console.log(storedUser);
+      setAppoint(parsedUser.Appointment);
+
     }
-    getAppointments();
+
   }, []);
+
+useEffect(() => {
+  function getAppointments() {
+    axios
+      .get(apiUrl + "/api/appointments/")
+      .then((res) => {
+        // Reverse the appointment list
+        const reversedAppointments = res.data.reverse();
+        setAppointments(reversedAppointments);
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  }
+
+  getAppointments();
+
+ 
+  const intervalId = setInterval(getAppointments, 5000);
+
+  return () => clearInterval(intervalId);
+}, []); 
+
 
   const [seeker, setSeeker] = useState([]);
 
@@ -71,11 +94,12 @@ export default function HomeStudent() {
   //get appointment detial to popup
   const [appointment, setAppointment] = useState([]);
   
-  function getApp(data) {
+  function getApp(address) {
     axios
-    .get(apiUrl + `/api/appointments/getOne/${data}`)
+    .get(apiUrl + `/api/appointments/getOne1/${address}`)
     .then((res) => {
       setAppointment(res.data);
+      console.log(res.data);
       localStorage.setItem('Appointment', JSON.stringify(res.data));
     })
     .catch((err) => {
@@ -128,6 +152,30 @@ export default function HomeStudent() {
       });
   };
 
+  ////////cancel notification/////////////
+  function cancelNotification(appointmentId) {
+    console.log(appointmentId);
+    const cancel = 1;
+    axios.patch(apiUrl +`/api/appointments/updateCancel/${appointmentId}`, { cancel })
+      .then((response) => {
+        console.log(response.data); // Handle successful update
+      })
+      .catch((error) => {
+        console.error(error); // Handle error
+      });
+    // axios
+    //   .get(apiUrl + "/api/appointments/")
+    //   .then((res) => {
+    //     // Reverse the appointment list
+    //     const reversedAppointments = res.data.reverse();
+    //     setAppointments(reversedAppointments);
+    //   })
+    //   .catch((err) => {
+    //     alert(err.message);
+    //   });
+  };
+  ////////////////////////////////////////
+
   const slotBackgroundColor = (category) => {
   
       const backgroundColor = category === 'one' ? '#4CAF50' : //green
@@ -170,6 +218,11 @@ export default function HomeStudent() {
   }
 
   const isStudent = user && user.role === 'Student';
+
+
+  if (appoint == null) {
+    return <div>Loading</div>
+  }
 
   return (
     <Box sx={{ display: "flex", borderRadius: "100px" }}>
@@ -248,7 +301,16 @@ export default function HomeStudent() {
                         }}
                       >
                         <Typography variant="h6" id="modal-title">
-                          ff
+                          with : {appoint.seeker}
+                        </Typography>
+                        <Typography variant="h6" id="modal-title">
+                          Reason : {appoint.title}
+                        </Typography>
+                        <Typography variant="h6" id="modal-title">
+                          Notes : {appoint.notes}
+                        </Typography>
+                        <Typography textAlign={"left"}>
+                          {DateTime(appoint.startDate)}
                         </Typography>
                         
                         <Button onClick={toggleModal} variant="contained">
@@ -286,28 +348,56 @@ export default function HomeStudent() {
             </Grid>
             <Grid item xs={12} md={6} sx={{ bgcolor: "#C5ECF1" }} marginTop={2}>
               <Box p={2}>
-              <Chip
-                label="Notifications"
-                sx={{
-                  fontSize: "1.2rem",
-                  backgroundColor: "#FFFFFF",
-                  position: "relative",
-                  height : "40px"
-                }}
-              > 
-              
-              </Chip>
-              <Grid
-                  style={{
+                <Chip
+                  label="Notifications"
+                  sx={{
+                    fontSize: "1.2rem",
+                    backgroundColor: "#FFFFFF",
                     position: "relative",
-                    bottom: 0,
-                    left: 0,
-                    width: "12px",
-                    height: "12px",
-                    borderRadius: "50%",
-                    backgroundColor: "red",
+                    height: "40px",
                   }}
-                />
+                ></Chip>
+              {appointments
+                .filter(
+                  (item) => item.makerNo === user.email && user.role === "Student"
+                )
+                .filter((item) => item.status >= 2)
+                    .length > 0 && (
+                    <Grid
+                      style={{
+                        position: "relative",
+                        bottom: 0,
+                        left: 0,
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
+                        backgroundColor: "red",
+                        left: "115px",
+                        top: "-35px",
+                      }}
+                    />
+                  )}
+                  {appointments
+                  .filter(
+                    (item) =>
+                      item.seekerNo === user.email && (user.role === "Instructor" || user.role === "Lecturer")
+                  )
+                  .filter((item) => item.status === 1)
+                    .length > 0 && (
+                    <Grid
+                      style={{
+                        position: "relative",
+                        bottom: 0,
+                        left: 0,
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
+                        backgroundColor: "red",
+                        left: "115px",
+                        top: "-35px",
+                      }}
+                    />
+                  )}
               </Box>
 
               {appointments
@@ -317,9 +407,24 @@ export default function HomeStudent() {
                 .filter((item) => item.status >= 2)
                 .map((item) => (
                   <Grid item xs={12} sm={6} md={12} key={item._id} marginTop={2} alignItems={"center"} >
-                    {item.status === 2 && (
-                      <Card sx={{ /*border: "2px solid blue"*/ width: "90%", borderRadius: "15px",textAlign:"center" ,alignItems:"center"}}>
+                     {item.status === 2 && (
+                      <Card
+                        sx={{
+                          /*border: "2px solid blue"*/ width: "90%",
+
+                          borderRadius: "15px",
+                          textAlign: "center",
+                          alignItems: "center",
+                        }}
+                      >
                         <CardContent>
+                          <IconButton
+                            type="button"
+                            sx={{ p: "10px", left:"200px",top:"-10px" }}
+                            aria-label="search"  
+                          >
+                            <CloseIcon  onClick={cancelNotification(item._id)}/>
+                          </IconButton>
                           <Typography textAlign={"left"}>
                             {item.seeker} accepted the appointment.
                           </Typography>
@@ -327,8 +432,22 @@ export default function HomeStudent() {
                       </Card>
                     )}
                     {item.status === 3 && (
-                      <Card sx={{/* border: "2px solid blue",*/ width: "90%",borderRadius: "15px", alignItems:"center" }}>
+                      <Card
+                        sx={{
+                          /* border: "2px solid blue",*/ width: "90%",
+                          borderRadius: "15px",
+                          alignItems: "center",
+                        }}
+                      >
                         <CardContent>
+                        <IconButton
+                            type="button"
+                            sx={{ p: "10px", left:"200px",top:"-10px" }}
+                            aria-label="search"
+                            onClick={cancelNotification(item._id)}
+                          >
+                            <CloseIcon />
+                          </IconButton>
                           <Typography textAlign={"left"}>
                             {item.seeker} rejected the appointment.
                           </Typography>
@@ -336,8 +455,22 @@ export default function HomeStudent() {
                       </Card>
                     )}
                     {item.status === 4 && (
-                      <Card sx={{ /*border: "2px solid blue",*/ width: "90%",borderRadius: "15px", borderLeft:"10px" }}>
+                      <Card
+                        sx={{
+                          /*border: "2px solid blue",*/ width: "90%",
+                          borderRadius: "15px",
+                          borderLeft: "10px",
+                        }}
+                      >
                         <CardContent>
+                        <IconButton
+                            type="button"
+                            sx={{ p: "10px", left:"200px",top:"-10px" }}
+                            aria-label="search"
+                            onClick={cancelNotification(item._id)}
+                          >
+                            <CloseIcon />
+                          </IconButton>
                           <Typography textAlign={"left"}>
                             {item.seeker} cancelled the appointment.
                           </Typography>

@@ -19,6 +19,7 @@ router.route("/add").post(async (req,res)=>{
     const makerNo = req.body.makerNo;
     const seekerNo = req.body.seekerNo;
     const notes = req.body.notes;
+    const cancel = isNaN(req.body.cancel) ? 0 : parseInt(req.body.cancel);
 
     let newAppointment = new Appointment();
     newAppointment.title = title;
@@ -32,7 +33,7 @@ router.route("/add").post(async (req,res)=>{
     newAppointment.makerNo = makerNo;
     newAppointment.seekerNo = seekerNo;
     newAppointment.notes = notes;
-
+    newAppointment.cancel = cancel;
     
 
 /*******
@@ -134,17 +135,17 @@ router.get("/getOne/:id", async (req, res) => {
     }
   }); 
 
-  router.get("/getOne/:id", async (req, res) => {
-    const filter = { _id: req.params.id };
+  // router.get("/getOne/:id", async (req, res) => {
+  //   const filter = { _id: req.params.id };
+  //   alert(filter);
+  //   const data = await Appointment.findOne(filter);
     
-    const data = await User.findOne(filter,{password:0});
-    
-    if (data) {
-      return res.status(200).send({ success: true, Appointment: data });
-    } else {
-      return res.status(400).send({ success: false, msg: "Data not found" });
-    }
-    }); 
+  //   if (data) {
+  //     return res.status(200).send({ success: true, Appointment: data });
+  //   } else {
+  //     return res.status(400).send({ success: false, msg: "Data not found" });
+  //   }
+  //   }); 
 
   router.patch("/update/:id", async (req, res) => {
     try {
@@ -175,6 +176,32 @@ router.get("/getOne/:id", async (req, res) => {
 
 
   });
+
+
+  //update cancel notification
+  router.patch("/updateCancel/:id", async (req, res) => {
+    try {
+      const appointmentId = req.params.id;
+      const { cancel } = req.body;
+  
+      // Find the appointment by ID and update the status
+      const updatedAppointment = await Appointment.findByIdAndUpdate(
+        appointmentId,
+        { cancel },
+        { new: true }
+      );
+  
+      if (!updatedAppointment) {
+        return res.status(404).json({ success: false, msg: "Appointment not found" });
+      }
+  
+      res.json({ success: true, appointment: updatedAppointment });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, msg: "Internal server error" });
+    }
+  });
+
 
 
 router.put("/updateAll/:updateId", async (req, res) => {

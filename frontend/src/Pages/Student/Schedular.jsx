@@ -91,14 +91,28 @@ const Schedular = () => {
       onChange(event.target.checked);
       setCreateRecurring(event.target.checked)
     };
+    //return null
   
     return (
-      <FormControl fullWidth>
+      <FormControl >
+          <TextField
+            autoFocus
+            name='week'
+            margin="dense"
+            label="No of weeks"
+            type="text"
+            Width= '5%'
+            value={week}
+            onChange={(e)=>{
+              setWeek(e.target.value);
+            }}
+           />
         <FormControlLabel
           control={<Checkbox checked={value} onChange={handleCheckboxChange} />}
           label="Enable Recurring Appointments"
         />
       </FormControl>
+      
     );
   };
   
@@ -124,28 +138,30 @@ const Schedular = () => {
 
   const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
     const onCustomFieldChange = (nextValue) => {
-      //onFieldChange({ customField: nextValue });
+      onFieldChange({ customField: nextValue });
       setWeek(nextValue);
+      console.log(week);
     };
     const onCustomFormChange = (nextValue) => {
       onFieldChange({ customForm: nextValue });
     };
-  
+
     return ( 
       <AppointmentForm.BasicLayout
         appointmentData={appointmentData}
         onFieldChange={onFieldChange}
         {...restProps}
       >
+       
         <AppointmentForm.Label
-          text="Other details"
+          text="Repeat Appointments"
           type="title"
         />
-        <AppointmentForm.TextEditor
+        {/* <AppointmentForm.TextEditor
           value={appointmentData.customField}
           onValueChange={onCustomFieldChange}
-          placeholder="Custom field"
-        />
+          placeholder="No of weeks"
+        /> */}
         <CustomFormControl
           value={appointmentData.customForm}
           onChange={onCustomFormChange}
@@ -157,21 +173,37 @@ const Schedular = () => {
   };
 
   /////////recurring appointment//////////////
-  const getNextDays = (startDate) => {
-    const nextDays = [];
-    
-    let currentDate = dayjs(startDate).add(7, 'day'); // Start from the next week
-    console.log(currentDate);
-    for (let i = 0; i < 3; i++) {
-      while (currentDate.day() !== 3) {
-        // 3 represents Wednesday in dayjs (0 is Sunday, 6 is Saturday)
-        currentDate = currentDate.add(1, 'day');
+  function getNextDays(startDate, endDate) {
+    const millisecondsInDay = 24 * 60 * 60 * 1000;
+    const startDateObject = new Date(startDate);
+    const endDateObject = new Date(endDate);
+    const daysArray = [];
+  
+    // Iterate for the next 21 days (3 weeks)
+    for (let i = 1; i <= 21; i++) {
+      // Clone the start date and add i days
+      const newDate = new Date(startDateObject.getTime() + i * millisecondsInDay);
+  
+      // Preserve the time part from the original startDate
+      newDate.setUTCHours(startDateObject.getUTCHours());
+      newDate.setUTCMinutes(startDateObject.getUTCMinutes());
+      newDate.setUTCSeconds(startDateObject.getUTCSeconds());
+      newDate.setUTCMilliseconds(startDateObject.getUTCMilliseconds());
+  
+      // Check if the new date is within the next three weeks
+      if (newDate <= endDateObject) {
+        daysArray.push(newDate.toISOString());
+      } else {
+        break; // Exit the loop if newDate is beyond endDate
       }
-      nextDays.push(currentDate);
-      currentDate = currentDate.add(7, 'day');
     }
-    return nextDays;
-  };
+  
+    return {
+      startDate: startDate,
+      endDate: endDate,
+      daysArray: daysArray
+    };
+  }
   ////////////////////////////////////////////
   
   
@@ -224,6 +256,10 @@ const Schedular = () => {
   
     useEffect(() => {
       fetchAppointments();
+
+      const intervalId = setInterval(fetchAppointments, 5000);
+
+           return () => clearInterval(intervalId);
     }, [makerNo]);
   
     const fetchAppointments = () => {
@@ -254,49 +290,100 @@ const Schedular = () => {
       setData((prevData) => {
         let updatedData = [];
 
-        if (added && createRecurring) {
-          // Add appointments for the next 3 Wednesdays only if createRecurring is true
-          const nextDays = getNextDays(updatedData.startDate); // Assuming you have a startDate property in your appointment data
+        // if (added && createRecurring) {
+         
+        //   //Add appointments for the next 3 Wednesdays only if createRecurring is true
+        //   const nextDays = getNextDays(updatedData.startDate, updatedData.endDate); // Assuming you have a startDate property in your appointment data
           
-          
-          nextDays.forEach((date) => {
-            //let i = 0;
-            const startingAddedId = prevData.length > 0 ? prevData[prevData.length - 1].id + 1 : 0;
-            console.log(startingAddedId);
-            const recurringAppointment = {
-              title: updatedData.title, // Use the same title as the initial appointment
-              startDate: date, // Set the date to the next Wednesday
-              id:startingAddedId,
-              category:"zero",
-              status: 2,
-              seeker:seeker, 
-              seekerNo:seekerNo, 
-              makerNo:makerNo,
+        //   for(let i = 1; i <= 3; i++) {
 
-            };
+        //     console.log(updatedData.startDate);
+        //   //nextDays.forEach(({ startDate, endDate }) => {
+        //     //let i = 0;
+        //     const startingAddedId = prevData.length > 0 ? prevData[prevData.length - 1].id + 1 : 0;
+        //     //let startDate = updatedData.startDate
+        //     const nextStartDate = new Date(updatedData.startDate);
+        //     nextStartDate.setDate(updatedData.startDate.getDate() + 7);
 
-            axios.post(apiUrl + '/api/appointments/add', recurringAppointment).then(() => {
-              // Handle successful addition of recurring appointments
-            }).catch((err) => {
-              // Handle error
-              console.error(err);
-            });
-          });
-        }
+        //     console.log(nextStartDate.toISOString());
+        //     //console.log(startDate);
+        //     return null;
+        //     const recurringAppointment = {
+        //       title: updatedData.title, // Use the same title as the initial appointment
+        //       //startDate: startDate,
+        //       //endDate: endDate,
+        //       id:startingAddedId,
+        //       category:"zero",
+        //       status: 2,
+        //       seeker:seeker, 
+        //       seekerNo:seekerNo, 
+        //       makerNo:makerNo,
+
+        //     };
+
+        //     axios.post(apiUrl + '/api/appointments/add', recurringAppointment).then(() => {
+        //       // Handle successful addition of recurring appointments
+        //     }).catch((err) => {
+        //       // Handle error
+        //       console.error(err);
+        //     });
+        //   }
+        // }
   
-        if (added && !createRecurring) {
+        if (added) {
           const startingAddedId = prevData.length > 0 ? prevData[prevData.length - 1].id + 1 : 0;
           const status = 2;
           const category = "zero";
           //const title = "Not Available";
-          updatedData =  { title:"", status, id:startingAddedId, seeker:seeker, seekerNo:seekerNo, makerNo:makerNo, category,  ...added };
+          updatedData =  { title:"", status, id:startingAddedId, seeker:seeker, maker:maker, seekerNo:seekerNo, makerNo:makerNo, category,  ...added };
           
+
           axios.post(apiUrl+"/api/appointments/add",updatedData).then(()=>{
             alert("Appointment Added")
-            window.location.reload();
           }).catch((err)=>{
             alert(err)
           }) 
+
+          if (createRecurring) {
+              //console.log(updatedData.startDate);
+              for(let i = 1; i <= week; i++) {
+                const startingAddedId = prevData.length > 0 ? prevData[prevData.length - 1].id + 1*(i+1) : 0;
+                //let startDate = updatedData.startDate
+                const nextStartDate = new Date(updatedData.startDate);
+                nextStartDate.setDate(updatedData.startDate.getDate() + 7*i);
+                
+                const nextEndDate = new Date(updatedData.endDate);
+                nextEndDate.setDate(updatedData.endDate.getDate() + 7*i);
+
+                console.log(nextStartDate.toISOString());
+                //console.log(startDate);
+                const recurringAppointment = {
+                        title: updatedData.title, // Use the same title as the initial appointment
+                        startDate: nextStartDate.toISOString(),
+                        endDate: nextEndDate.toISOString(),
+                        id:startingAddedId,
+                        category:"zero",
+                        status: 2,
+                        seeker:seeker, 
+                        maker:maker,
+                        seekerNo:seekerNo, 
+                        makerNo:makerNo,
+          
+                      };
+                      axios.post(apiUrl + '/api/appointments/add', recurringAppointment).then(() => {
+                              // Handle successful addition of recurring appointments
+                            }).catch((err) => {
+                              // Handle error
+                              console.error(err);
+                            });
+                
+              }
+            }
+
+
+            window.location.reload();
+
+          
   
           //console.log("ff"+updatedData);
 
@@ -477,7 +564,11 @@ const Schedular = () => {
           <Stack direction = {'row'} flexGrow = {1} alignItems="center" justifyContent="flex-start" spacing={1}>
             <StyledAvatar src="https://upload.wikimedia.org/wikipedia/en/6/65/LOGO_OF_RUHUNA.jpg"  sx={{ width: 56, height: 75 }} variant="square"/>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer" }}>
-                UNIVERSITY OF RUHUNA
+                <a href="/grp19/HomeStudent">
+                    <Button variant="h6" component="div" sx={{ flexGrow: 1, textAlign:"revert-layer",color:"white" ,fontSize:"20px"}} >
+                      UNIVERSITY OF RUHUNA
+                    </Button>
+                  </a>
                 </Typography>
 
                 <Stack direction="row" spacing={2}>

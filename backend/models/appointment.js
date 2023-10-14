@@ -48,7 +48,12 @@ const appointmentSchema = new Schema({
     notes: {
         type : String,
         required : false
+    },
+    cancel: {
+        type : Number ,
+        required : false
     }
+
 })
 
 const Appointment = mongoose.model("appointment",appointmentSchema);

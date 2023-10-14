@@ -129,6 +129,46 @@ export default function SAccountPage () {
 
     ///////////////////////////
 
+    ///////////change details layout////////////////
+    // const [modal_Open1, setModalOpen1] = useState(false);
+
+    // const toggleModal1 = () => {
+    //   setModalOpen1(!modal_Open1);
+    //   //setVerify(true);
+    // };
+
+    // if (modal_Open1) {
+    //   document.body.classList.add("active-modal");
+    // } else {
+    //   document.body.classList.remove("active-modal");
+    // }
+
+    // const [formData1, setFormData1] = useState({
+    //   fullName: "",
+    //   email: "",
+    //   telephoneNo: ""
+    //   // Add more fields as needed
+    // });
+
+    // const handleInputChange1 = (e) => {
+    //   const { name, value } = e.target;
+    //   setFormData1({
+    //     ...formData1,
+    //     [name]: value,
+    //   });
+    // };
+
+    // const handleSubmit1 = (e) => {
+    //   e.preventDefault();
+    //   // Handle form submission logic here
+    //   console.log("Form Data1:", formData1);
+
+    //   // Close the modal after form submission
+    //   toggleModal1();
+    // };
+
+    ////////////////////////////////////////////////
+
     ///////////change password layout part///////////////
 
       const [modalOpen, setModalOpen] = useState(false);
@@ -202,6 +242,39 @@ export default function SAccountPage () {
 
   }
   ///////////////////////////////////////////////////
+
+  /////////////change detail process/////////
+  // function ChangeDetail(e){
+  //   e.preventDefault();
+  //   mergeObjects(user,formData1);
+
+  //   console.log(user);
+
+  //   return null;
+
+  //   axios.put(apiUrl + `/api/users/${user._id}`, { 
+	// 	  firstName: user.firstName,
+	// 	  lastName: user.lastName,
+	// 	  fullName: user.fullName,
+	// 	  regNo: user.regNo,
+	// 	  email: user.email,
+	// 	  department: user.department,
+	// 	  telephoneNo: user.telephoneNo,
+	// 	  role: user.role,
+	// 	  password: user.password,
+	// 	  userimage: user.userimage,
+  //    })
+  //     .then((response) => {
+  //       alert('Data changed successfully!');// Handle successful update
+  //     })
+  //     .catch((error) => {
+  //       console.log(user);
+  //       alert(error.message); // Handle error
+  //     });
+  //     //window.location.reload();
+  //   };
+
+  ///////////////////////////////////////////
 
   ////////////////change password process//////////////
 
@@ -416,7 +489,7 @@ export default function SAccountPage () {
                   left: "590px",
                 }}
               >
-                Change Details
+                Change Password
               </Button>
 
               <Modal
@@ -440,19 +513,41 @@ export default function SAccountPage () {
                   }}
                 >
                   <Typography variant="h4" id="modal-title">
-                    Form Title
+                    Change Password
                   </Typography>
                   <form onSubmit={handleSubmit}>
                     {/* Input fields for your form */}
+
+                    <Typography
+                      sx={{
+                        top: "1px",
+                      }}
+                    >
+                      {" Enter your old paaword"}
+                    </Typography>
+
+
                     <TextField
                       label="Old Password"
                       name="oldpassword"
                       value={oldPassword}
-                      onChange={(e)=> {setOldPassword(e.target.value);}}
+                      onChange={(e) => {
+                        setOldPassword(e.target.value);
+                      }}
                       fullWidth
                       margin="normal"
                       variant="outlined"
                     />
+
+                    <Button onClick={verifyPassword}>verify</Button>
+
+                   <Typography
+                      sx={{
+                        top: "1px",
+                      }}
+                    >
+                      {" Enter your new paaword"}
+                    </Typography>
                     <TextField
                       label="New Password"
                       name="password"
@@ -465,12 +560,17 @@ export default function SAccountPage () {
                     />
                     {/* Add more input fields as needed */}
 
-                    <Button onClick={verifyPassword}>
-                      verify
-                    </Button>
-
                     {/* Submit button */}
-                    <Button onClick={ChangePassword} type="submit" variant="contained" color="primary" >
+                    <Button
+                      onClick={ChangePassword}
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      sx={{
+                        top: "38px",
+                        left: "190px",
+                      }}
+                    >
                       Submit
                     </Button>
                   </form>
@@ -479,6 +579,92 @@ export default function SAccountPage () {
                   </Button>
                 </Box>
               </Modal>
+
+              {/* <Button
+                color="primary"
+                onClick={toggleModal1}
+                borderLeft="1px"
+                variant="contained"
+                sx={{
+                  width: 200,
+                  backgroundColor: "#46B7C7",
+                  left: "100px",
+                }}
+              >
+                Change Details
+              </Button>
+
+              <Modal
+                open={modal_Open1}
+                onClose={toggleModal1}
+                aria-labelledby="modal-title1"
+                aria-describedby="modal-description"
+              >
+                <Box
+                  className="modal-content"
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: 400, // Set the desired width for your form
+                    bgcolor: "white", // Set the background color to white
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: "10px",
+                  }}
+                >
+                  <Typography variant="h4" id="modal-title1">
+                    Change Details
+                  </Typography>
+                  <form onSubmit={handleSubmit1}>
+                    
+                    <TextField
+                      label="Name"
+                      name="fullName"
+                      value={formData1.fullName}
+                      onChange={handleInputChange1}
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                    />
+                    <TextField
+                      label="Email"
+                      name="email"
+                      value={formData1.email}
+                      onChange={handleInputChange1}
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                    />
+                    <TextField
+                      label="Telephone No"
+                      name="telephoneNo"
+                      value={formData1.telephoneNo}
+                      onChange={handleInputChange1}
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                    />
+                  
+                    <Button
+                      sx={{
+                        top: "35px",
+                        left: "250px",
+                      }}
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      onClick={ChangeDetail}
+                    >
+                      Submit
+                    </Button>
+                  </form>
+                  <Button onClick={toggleModal1} variant="contained">
+                    CLOSE
+                  </Button>
+                </Box>
+              </Modal> */}
 
             </Grid>
           </Grid>
